@@ -18,7 +18,10 @@ function(Note){
   };
   Instrument.prototype.update = function()
   {
-    
+    for(var note in this.notes)
+    {
+      
+    }
   };
   Instrument.prototype.noteOn = function(note)
   {

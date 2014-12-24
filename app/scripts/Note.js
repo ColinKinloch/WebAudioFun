@@ -4,9 +4,8 @@ define([],
 function(){
   var Note = function(key, mag, voice)
   {
-    this.key = key;
+    this.key = key || -1;
     this.mag = mag || 1.0;
-    this.voice = voice || null;
   };
   
   Note.prototype.getFreq = function()

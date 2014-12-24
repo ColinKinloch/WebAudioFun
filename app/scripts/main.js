@@ -91,7 +91,6 @@ function(  $      ,  Stats ,  Instrument ,  MonoSynth  )
   
   $('#volume').on('change mousemove',function(e){
     gain.gain.value = $(this).val();
-    console.log(gain.gain.value);
   });
   $('#volume').change();
   

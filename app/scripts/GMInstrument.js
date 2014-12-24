@@ -25,18 +25,19 @@ function(Instrument ,  Note){
     switch(type)
     {
       case 0x90://down
+        var note = new Note(key, mag);
         if(mag != 0)
         {
-          var note = new Note(key, mag);
           this.noteOn(note);
         }
         else
         {
-          this.noteOff(key);
+          this.noteOff(note);
         }
-          break;
+        break;
       case 0x80://up
-        this.noteOff(key);
+        var note = new Note(key, 0.0);
+        this.noteOff(note);
         break;
       case 0xb0:
         switch(key)
