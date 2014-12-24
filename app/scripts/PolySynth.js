@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['Instrument', 'Voice'],
-function(Instrument ,  Voice ){
+define(['Synth', 'Voice', 'Note'],
+function(Instrument ,  Voice, Note ){
   var PolySynth = function(context, props)
   {
     Instrument.call(this, context);
@@ -11,41 +11,46 @@ function(Instrument ,  Voice ){
     {
       this.voices[i] = new Voice(context);
       var voice = this.voices[i];
-      voice.osc.type = 'triangle';
-      voice.osc.start();
-      voice.connect(this.env);
-      //voice.start();
+      voice.type = 'triangle';
+      voice.start();
+      voice.connect(this.out);
+      voice.update();
     }
-    this.connect(context.destination);
     this.env.gain.value = 1.0;
+    this.env.connect(this.out);
   };
   
   PolySynth.prototype = Object.create(Instrument.prototype);
   
   PolySynth.prototype.constructor = PolySynth;
   
-  PolySynth.prototype.noteOn = function(key, mag)
+  PolySynth.prototype.noteOn = function(note)
   {
-    Instrument.prototype.noteOn.call(this, key, mag);
-    var i = this.notes.indexOf(key);
+    Instrument.prototype.noteOn.call(this, note);
+    var i = Note.find(this.notes, note.key);
     console.log(i)
     var voice = this.voices[i];
-    voice.osc.frequency.cancelScheduledValues(0);
-    voice.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(key-69)/12), 0, 0.08 );
-    voice.env.gain.cancelScheduledValues(0);
-    voice.env.gain.setTargetAtTime(mag/127, 0, 0.05)
+    note.voice = voice;
+    if(voice)
+    {
+      voice.osc.frequency.cancelScheduledValues(0);
+      voice.osc.frequency.value = ( note.getFreq());
+      voice.env.gain.cancelScheduledValues(0);
+      voice.env.gain.setTargetAtTime(note.mag/127, 0, 0.05)
+    }
   };
   PolySynth.prototype.noteOff = function(key)
   {
-    var i = this.notes.indexOf(key);
+    //var i = this.notes.indexOf(key);
+    var i = Note.find(this.notes, key);
     var voice = this.voices[i];
     Instrument.prototype.noteOff.call(this, key);
-    if(!this.sustain)
+    if(!this.sustain && voice)
     {
       voice.env.gain.cancelScheduledValues(0);
       voice.env.gain.setTargetAtTime(0.0, 0, 0.05 );
       voice.osc.frequency.cancelScheduledValues(0);
-      voice.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(this.notes[this.notes.length-1]-69)/12), 0, 0.05 );
+      voice.osc.frequency.value = (this.notes[this.notes.length-1].getFreq());
     }
   };
   

@@ -25,16 +25,26 @@ function(  $      ,  Stats ,  Instrument ,  MonoSynth  )
   
   var midi;
   var context = new AudioContext();
+  var gain = context.createGain();
+  var panner = context.createPanner();
+  panner.panningModel = 'HRTF';
+  panner.distanceModel = 'inverse';
+  var listener = context.listener;
+  listener.setPosition(0,0,0);
+  listener.dopplerFactor = 1;
+  listener.speedOfSound = 343.3;
+  listener.setOrientation(0,0,-1,0,1,0);
   var inst = new Instrument(context, {
-    voices: 4
+    voices: 32
   });
   //inst = new MonoSynth(context);
-  
-  inst.connect(context.destination);
+  gain.connect(panner);
+  panner.connect(context.destination);
+  inst.connect(gain);
   
   var onMidi = function(e)
   {
-    inst.midi(e.data);
+    inst.update(e.data);
   };
   var onMidiConnect = function(e)
   {
@@ -79,11 +89,19 @@ function(  $      ,  Stats ,  Instrument ,  MonoSynth  )
   
   $(window).resize();
   
-  
+  $('#volume').on('change mousemove',function(e){
+    gain.gain.value = $(this).val();
+    console.log(gain.gain.value);
+  });
+  $('#volume').change();
   
   var loop = function(t, frame)
   {
-    
+    /*
+    var speed = 0.005;
+    var dist = 3;
+    listener.setPosition(Math.cos(t*speed)*dist,Math.sin(t*speed)*dist,0);
+    */
   };
   var main = function()
   {

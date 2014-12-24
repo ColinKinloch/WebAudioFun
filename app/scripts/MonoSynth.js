@@ -1,42 +1,45 @@
 /*global define*/
 'use strict';
-define(['Instrument'],
-function(Instrument){
+define(['Synth', 'Voice'],
+function(Synth,   Voice){
   var MonoSynth = function(context)
   {
-    Instrument.call(this, context);
-    this.osc = context.createOscillator();
-    this.osc.type = 'triangle';
-    this.osc.start();
-    this.env = context.createGain();
-    this.osc.connect(this.env);
-    this.connect(context.destination);
-    this.env.gain.value = 0.0;
+    Synth.call(this, context);
+    this.voice = new Voice(context);
+    this.voice.start();
+    this.voice.env.gain.value = 0.0;
+    this.voice.connect(this.out);
   };
   
-  MonoSynth.prototype = Object.create(Instrument.prototype);
+  MonoSynth.prototype = Object.create(Synth.prototype);
   
   MonoSynth.prototype.constructor = MonoSynth;
-  
+  MonoSynth.prototype.update = function(midi)
+  {
+    Synth.prototype.update.call(this, midi);
+    //this.env.gain.value = this.volume;
+    console.log(this.notes);
+    
+  };
   MonoSynth.prototype.noteOn = function(key, mag)
   {
-    Instrument.prototype.noteOn.call(this, key, mag);
-    this.osc.frequency.cancelScheduledValues(0);
-    this.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(key-69)/12), 0, 0.08 );
-    this.env.gain.cancelScheduledValues(0);
-    this.env.gain.setTargetAtTime(mag/127, 0, 0.05)
+    Synth.prototype.noteOn.call(this, key, mag);
+    this.voice.osc.frequency.cancelScheduledValues(0);
+    this.voice.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(key-69)/12), 0, 0.08 );
+    this.voice.env.gain.cancelScheduledValues(0);
+    this.voice.env.gain.setTargetAtTime(mag/127, 0, 0.05);
   };
   MonoSynth.prototype.noteOff = function(key)
   {
-    Instrument.prototype.noteOff.call(this, key);
-    if(!this.sustain)
+    Synth.prototype.noteOff.call(this, key);
+    //if(!this.sustain)
     if(this.notes.length===0)
     {
-      this.env.gain.cancelScheduledValues(0);
-      this.env.gain.setTargetAtTime(0.0, 0, 0.05 );
+      this.voice.env.gain.cancelScheduledValues(0);
+      this.voice.env.gain.setTargetAtTime(0.0, 0, 0.05 );
     } else {
-      this.osc.frequency.cancelScheduledValues(0);
-      this.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(this.notes[this.notes.length-1]-69)/12), 0, 0.05 );
+      this.voice.osc.frequency.cancelScheduledValues(0);
+      this.voice.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(this.notes[this.notes.length-1]-69)/12), 0, 0.05 );
     }
   };
   

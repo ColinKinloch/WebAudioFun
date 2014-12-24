@@ -17,6 +17,10 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/vendor/assets/font
     height: 100%;
     user-select: none;
 }
+#overlay {
+    position: absolute;
+    
+}
 html {
 }
 /* Space out content a bit */
