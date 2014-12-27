@@ -18,48 +18,50 @@ function(Instrument ,  Note){
   GMInstrument.prototype.update = function(midi)
   {
     Instrument.prototype.update.call(this);
-    var type = midi[0];
-    var key = midi[1];
-    var mag = midi[2];
-    console.log(type,key,mag);
-    switch(type)
+    var m = {
+      type: midi[0],
+      key: midi[1],
+      mag: midi[2]
+    };
+    console.log(m.type,m.key,m.mag);
+    switch(m.type)
     {
       case 0x90://down
-        var note = new Note(key, mag);
-        if(mag != 0)
+        var note = new Note(m);
+        console.log(note.getNote(), note.mag);
+        if(m.mag != 0)
         {
-          this.noteOn(note);
+          this.noteOn(m.key, m.mag);
         }
         else
         {
-          this.noteOff(note);
+          this.noteOff(m.key, m.mag);
         }
         break;
       case 0x80://up
-        var note = new Note(key, 0.0);
-        this.noteOff(note);
+        this.noteOff(m.key, m.mag);
         break;
       case 0xb0:
-        switch(key)
+        switch(m.key)
         {
           case 0://Bank Select
-            this.bank = mag;
+            this.bank = m.mag;
             break;
           case 1://Modulation Depth
-            this.modulation = mag/127;
+            this.modulation = m.mag/127;
             break;
           case 7://Volume
-            this.volume = mag/127;
+            this.volume = m.mag/127;
             break;
           case 64://Sustain
-            this.sustain = mag/127;
+            this.sustain = m.mag/127;
             break;
         }
-        this.sustain = mag;
+        this.sustain = m.mag;
         //this.noteOff();
         break;
-      case 0xe0://pitch bend
-        this.bend = mag;
+      case 0xe0://pitch bend (current key?)
+        this.bend = m.mag;
         break;
     };
   };

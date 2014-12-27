@@ -9,7 +9,7 @@ function(Note){
   
   var Instrument = function(context)
   {
-    this.notes = [];
+    this.notes = {};
     this.sustain = 0;
     this.bend = 64;
     this.env = context.createGain();
@@ -18,23 +18,24 @@ function(Note){
   };
   Instrument.prototype.update = function()
   {
-    for(var note in this.notes)
-    {
-      
-    }
   };
-  Instrument.prototype.noteOn = function(note)
+  Instrument.prototype.note = function(key, mag)
   {
-    this.notes.push(note);
+    this.notes[key] = mag;
   };
-  Instrument.prototype.noteOff = function(key)
+  Instrument.prototype.noteOn = function(key, mag)
   {
-    var i = Note.find(this.notes, key);
-    console.log(i)
-    if(i!=-1)
+    this.note(key, mag);
+  };
+  Instrument.prototype.noteOff = function(key, mag)
+  {
+    this.note(key, mag);
+    //var i = Note.find(this.notes, key);
+    
+    /*if(this.notes[key] === undefined)
     {
-      this.notes.splice(i,1);
-    }
+      this.notes[key] = undefined;
+    }*/
   };
   return Instrument;
 });

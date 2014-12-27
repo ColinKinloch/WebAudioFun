@@ -6,8 +6,9 @@ function(Synth ,  Voice, Note ){
   {
     Synth.call(this, context);
     this.voices = [];
+    this.active = {};
     this.env = context.createGain();
-    for(var i=0;i<props.voices; ++i)
+    /*for(var i=0;i<props.voices; ++i)
     {
       this.voices[i] = new Voice(context);
       var voice = this.voices[i];
@@ -15,7 +16,7 @@ function(Synth ,  Voice, Note ){
       voice.start();
       voice.connect(this.out);
       voice.update();
-    }
+    }*/
     this.env.gain.value = 1.0;
     this.env.connect(this.out);
   };
@@ -26,6 +27,7 @@ function(Synth ,  Voice, Note ){
   
   PolySynth.prototype.update = function(midi)
   {
+    this.active = Voice.clean(this.active);
     Synth.prototype.update.call(this, midi);
     /*var i = Note.find(this.notes, key);
     var voice = this.voices[i];
@@ -39,31 +41,31 @@ function(Synth ,  Voice, Note ){
     }*/
   };
   /**/
-  PolySynth.prototype.noteOn = function(note)
+  PolySynth.prototype.noteOn = function(key, mag)
   {
-    Synth.prototype.noteOn.call(this, note);
-    var i = Note.find(this.notes, note.key);
-    console.log(i, 'on');
-    var voice = this.voices[i];
-    note.voice = voice;
-    
+    Synth.prototype.noteOn.call(this, key, mag);
+    //var voice = this.active[key] || Voice.getSilent(this.voices);//this.voices[i];
+    var voice = this.active[key] || new Voice(this.out.context, key, mag);
+    voice.start();
+    voice.connect(this.out);
+    //note.voice = voice;
     if(voice)
     {
-      voice.sing(note);
+      voice.sing(key, mag);
+      this.active[key] = voice;
     }
   };
-  PolySynth.prototype.noteOff = function(note)
+  PolySynth.prototype.noteOff = function(key, mag)
   {
     //var i = this.notes.indexOf(key);
-    var i = Voice.find(this.voices, note.key);
-    console.log(i, 'off');
-    var voice = this.voices[i];
-    Synth.prototype.noteOff.call(this, note);
+    //var note = this.notes[i];
+    var voice = this.active[key];
+    Synth.prototype.noteOff.call(this, key, mag);
     //var note = voice.note;
     //note.mag = 0.0;
-    if(!this.sustain && voice)
+    if(voice)
     {
-      voice.sing(note);
+      voice.sing(key, 0.0);
     }
   };
   

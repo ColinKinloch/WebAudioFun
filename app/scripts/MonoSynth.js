@@ -12,8 +12,8 @@ function(Synth,   Voice){
   };
   
   MonoSynth.prototype = Object.create(Synth.prototype);
-  
   MonoSynth.prototype.constructor = MonoSynth;
+  
   MonoSynth.prototype.update = function(midi)
   {
     Synth.prototype.update.call(this, midi);
