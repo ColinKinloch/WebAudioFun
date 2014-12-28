@@ -1,8 +1,9 @@
 /*global define*/
 'use strict';
+//Note definition and conversion
 define([],
 function(){
-  var Note = function(key, mag, voice)
+  var Note = function(key, mag)
   {
     console.log(key);
     this.freq = Note.toFreq(key);
@@ -14,7 +15,9 @@ function(){
   {
     var freq = this.freq;
     if(this.bend>0)
-     freq += 0;
+    {
+      freq += 0;
+    }
     return freq;
   };
   Note.prototype.getNote = function()
@@ -28,8 +31,12 @@ function(){
   Note.find = function(notes, key)
   {
     for(var i = 0; notes.length>i; ++i)
-     if(notes[i].key===key)
-      return i;
+    {
+      if(notes[i].key===key)
+      {
+        return i;
+      }
+    }
   };
   Note.midiToFreq = function(midi)
   {
@@ -57,22 +64,20 @@ function(){
   };
   Note.midiToNote = function(midi)
   {
-    var note='';
     var key = midi%12;
     var octave = ((midi-key)/12)-2;
     var keys = 'ccddeffggaab';
     var intonation = '';
-    if(key!=keys.search(keys[key]))
+    if(key!==keys.search(keys[key]))
     {
       intonation = '#';
     }
     return ''+keys[key]+intonation+octave;
-    return ;
   };
   Note.freqToNote = function(freq)
   {
     return Note.midiToNote(Math.round(Note.freqToMidi(freq)));
-  }
+  };
   Note.noteToFreq = function(note)
   {
     return Note.midiToFreq(Note.noteToMidi(note));
@@ -83,16 +88,12 @@ function(){
     {
       case 'string'://Lilypond note cis4 C4#
         return Note.noteToFreq(val);
-        break;
       case 'number'://Freq
         return val;
-        break;
       case 'undefined':
         return 440;
-        break;
       case 'object'://MIDI
-        return Note.midiToFreq(val.key)
-        break;
+        return Note.midiToFreq(val.key);
     }
   };
   

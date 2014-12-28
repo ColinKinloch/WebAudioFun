@@ -41,31 +41,44 @@ function(Note){
   Voice.find = function(voices, key)
   {
     for(var i = 0; voices.length>i; ++i)
-     if(voices[i].key===key)
-      return i;
+    {
+      if(voices[i].key===key)
+      {
+        return i;
+      }
+    }
   };
   Voice.clean = function(voices)
   {
     for(var key in voices)
-     if(voices[key])
-      if(voices[key].key === undefined)
-       if(voices[key].env.gain.value <= 0)
-       {
-        voices[key].stop();
-        delete voices[key];
-       }
-    console.log(voices)
+    {
+      if(voices[key])
+      {
+        if(voices[key].key === undefined)
+        {
+          if(voices[key].env.gain.value <= 0)
+          {
+            voices[key].stop();
+            delete voices[key];
+          }
+        }
+      }
+    }
     return voices;
   };
   Voice.getSilent = function(voices)
   {
     for(var i = 0; voices.length>i; ++i)
-     if(voices[i].env.gain.value <= 0)
-      return voices[i];
+    {
+      if(voices[i].env.gain.value <= 0)
+      {
+        return voices[i];
+      }
+    }
   };
   Voice.getFreq = function(key)
   {
-    return 440 * Math.pow(2,(key-69)/12);
+    return Node.midiToFreq(key);
   };
   return Voice;
 });

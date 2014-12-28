@@ -19,7 +19,7 @@ function(Sequencer ,  Note){
   };
   SimpleSeq.prototype.next = function()
   {
-    if(this.i==this.notes.length)
+    if(this.i===this.notes.length)
     {
       this.i = 0;
     }
@@ -28,17 +28,17 @@ function(Sequencer ,  Note){
   SimpleSeq.prototype.current = function()
   {
     var i;
-    if(this.i==this.notes.length)
+    if(this.i===this.notes.length)
     {
       this.i = 0;
     }
-    if(this.i==0)
+    if(this.i===0)
     {
       i = this.notes.length-1;
     }
     else
     {
-      i = this.i-1
+      i = this.i-1;
     }
     return this.notes[i];
   };

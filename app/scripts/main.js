@@ -29,6 +29,15 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
   
   var pads = navigator.getGamepads();
   
+  var moveListener = function(obj, lis)
+  {
+    lis.setPosition(obj.position.x, obj.position.y, obj.position.z);
+    lis.setOrientation(obj.rotation.x, obj.rotation.y, obj.rotation.z,
+                            obj.up.x, obj.up.y, obj.up.z);
+  };
+  
+  var listenObj = new THREE.Object3D();
+  
   var midi;
   var context = new AudioContext();
   var gain = context.createGain();
@@ -36,10 +45,11 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
   panner.panningModel = 'HRTF';
   panner.distanceModel = 'inverse';
   var listener = context.listener;
-  listener.setPosition(0,0,0);
   listener.dopplerFactor = 1;
   listener.speedOfSound = 343.3;
-  listener.setOrientation(0,0,-1,0,1,0);
+  
+  moveListener(listenObj, listener);
+  
   var inst = new Instrument(context, {
     voices: 16
   });
@@ -168,7 +178,7 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
   {
     var w = e.target.innerWidth;
     var h = e.target.innerHeight;
-    var r = w/h;
+    //var r = w/h;
     width = w;
     height = h;
   };
@@ -176,30 +186,19 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
   
   $(window).resize();
   
-  $('#volume').on('change mousemove',function(e){
+  $('#volume').on('change mousemove',function(){
     gain.gain.value = $(this).val();
     $('#volumeout').html(gain.gain.value);
   });
   $('#volume').change();
-  $('#bpm').on('change mousemove',function(e){
+  $('#bpm').on('change mousemove',function(){
     seq.bpm = $(this).val();
     $('#bpmout').html(seq.bpm);
   });
   $('#bpm').change();
-  var listenObj = new THREE.Object3D();
   
-  var pan = {
-    x:0,
-    y:0
-  };
-  var moveListener = function(obj, lis)
-  {
-    lis.setPosition(obj.position.x, obj.position.y, obj.position.z);
-    lis.setOrientation(obj.rotation.x, obj.rotation.y, obj.rotation.z,
-                            obj.up.x, obj.up.y, obj.up.z);
-  };
   var ticker = 0;
-  var loop = function(t, frame)
+  var loop = function(t/*, frame*/)
   {
     pads = navigator.getGamepads();
     var pad = pads[0];
@@ -216,8 +215,8 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
       listenObj.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale);
       moveListener(listenObj, listener);
     }
-    var tick = Math.floor((t*0.000016)*seq.bpm%2)
-    if(ticker != tick)
+    var tick = Math.floor((t*0.000016)*seq.bpm%2);
+    if(ticker !== tick)
     {
       ticker = tick;
       var note= seq.current();

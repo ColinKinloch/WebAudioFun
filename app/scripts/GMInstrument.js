@@ -1,5 +1,6 @@
 /*global define*/
 'use strict';
+//General Midi instrument
 define(['Instrument', 'Note'],
 function(Instrument ,  Note){
   var GMInstrument = function(context)
@@ -29,7 +30,7 @@ function(Instrument ,  Note){
       case 0x90://down
         var note = new Note(m);
         console.log(note.getNote(), note.mag);
-        if(m.mag != 0)
+        if(m.mag !== 0)
         {
           this.noteOn(m.key, m.mag);
         }
@@ -63,7 +64,7 @@ function(Instrument ,  Note){
       case 0xe0://pitch bend (current key?)
         this.bend = m.mag;
         break;
-    };
+    }
   };
   
   return GMInstrument;

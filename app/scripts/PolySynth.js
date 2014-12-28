@@ -2,7 +2,7 @@
 'use strict';
 define(['Synth', 'Voice', 'Note'],
 function(Synth ,  Voice, Note ){
-  var PolySynth = function(context, props)
+  var PolySynth = function(context)
   {
     Synth.call(this, context);
     this.voices = [];
@@ -48,7 +48,7 @@ function(Synth ,  Voice, Note ){
     var voice;
     if(this.active[key])
     {
-      voice = this.active[key]
+      voice = this.active[key];
     }
     else
     {

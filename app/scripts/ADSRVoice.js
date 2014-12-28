@@ -1,14 +1,16 @@
 /*global define*/
 'use strict';
+//Attack, Decay, Sustain, Release enveloped voice
 define(['Voice'],
 function(Voice){
   var AdsrProp = function(time, mag)
   {
-    this.time = 0.0;
-    this.mag = 0.0;
+    this.time = time || 0.0;
+    this.mag = mag || 0.0;
   };
   var AdsrVoice = function(context)
   {
+    this.osc = context.createOscillator();
     this.a = new AdsrProp();
     this.d = new AdsrProp();
     this.s = new AdsrProp();
@@ -36,17 +38,29 @@ function(Voice){
   Voice.clean = function(voices)
   {
     for(var key in voices)
-     if(voices[key])
-      if(voices[key].key === undefined)
-       if(voices[key].env.gain.value <= voices[key].threshold)
-        voices[key] = undefined;
+    {
+      if(voices[key])
+      {
+        if(voices[key].key === undefined)
+        {
+          if(voices[key].env.gain.value <= voices[key].threshold)
+          {
+            voices[key] = undefined;
+          }
+        }
+      }
+    }
     return voices;
   };
   Voice.getSilent = function(voices)
   {
     for(var i = 0; voices.length>i; ++i)
-     if(voices[i].env.gain.value <= voices[i].threshold)
-      return voices[i];
+    {
+      if(voices[i].env.gain.value <= voices[i].threshold)
+      {
+        return voices[i];
+      }
+    }
   };
   return AdsrVoice;
 });

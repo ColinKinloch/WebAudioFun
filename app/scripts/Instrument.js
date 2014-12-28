@@ -2,11 +2,6 @@
 'use strict';
 define(['Note'],
 function(Note){
-  var keyToFreq = function(key)
-  {
-    return 440 * Math.pow(2,(key-69)/12);
-  };
-  
   var Instrument = function(context)
   {
     this.notes = {};
