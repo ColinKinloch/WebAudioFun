@@ -21,7 +21,10 @@ function(){
   {
     return Note.freqToNote(this.freq);
   };
-  
+  Note.prototype.getMidi = function()
+  {
+    return Note.freqToMidi(this.freq);
+  };
   Note.find = function(notes, key)
   {
     for(var i = 0; notes.length>i; ++i)
@@ -34,7 +37,7 @@ function(){
   };
   Note.noteToMidi = function(note)
   {
-    if(! /^[a-gA-G](es|is)*\-?\d*$/.test(note))
+    if(! /^[a-gA-G](es|#|is)*\-?\d*$/.test(note))
     {
       throw 'Malformed note';
     }
@@ -79,7 +82,7 @@ function(){
     switch(typeof val)
     {
       case 'string'://Lilypond note cis4 C4#
-        return Note.midi;
+        return Note.noteToFreq(val);
         break;
       case 'number'://Freq
         return val;

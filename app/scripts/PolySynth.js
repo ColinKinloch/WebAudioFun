@@ -45,9 +45,17 @@ function(Synth ,  Voice, Note ){
   {
     Synth.prototype.noteOn.call(this, key, mag);
     //var voice = this.active[key] || Voice.getSilent(this.voices);//this.voices[i];
-    var voice = this.active[key] || new Voice(this.out.context, key, mag);
-    voice.start();
-    voice.connect(this.out);
+    var voice;
+    if(this.active[key])
+    {
+      voice = this.active[key]
+    }
+    else
+    {
+      voice = new Voice(this.out.context, key, mag);
+      voice.start();
+      voice.connect(this.out);
+    }
     //note.voice = voice;
     if(voice)
     {

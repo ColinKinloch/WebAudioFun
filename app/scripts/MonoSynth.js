@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['Synth', 'Voice'],
-function(Synth,   Voice){
+define(['Synth', 'Voice', 'Note'],
+function(Synth,   Voice ,  Note){
   var MonoSynth = function(context)
   {
     Synth.call(this, context);
@@ -25,21 +25,22 @@ function(Synth,   Voice){
   {
     Synth.prototype.noteOn.call(this, key, mag);
     this.voice.osc.frequency.cancelScheduledValues(0);
-    this.voice.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(key-69)/12), 0, 0.08 );
+    this.voice.osc.frequency.setTargetAtTime( Note.midiToFreq(key), 0, 0.08 );
     this.voice.env.gain.cancelScheduledValues(0);
     this.voice.env.gain.setTargetAtTime(mag/127, 0, 0.05);
   };
   MonoSynth.prototype.noteOff = function(key)
   {
     Synth.prototype.noteOff.call(this, key);
-    //if(!this.sustain)
+    //TODO fix for new object based notes. Add ordering, sequencer?.
     if(this.notes.length===0)
     {
       this.voice.env.gain.cancelScheduledValues(0);
       this.voice.env.gain.setTargetAtTime(0.0, 0, 0.05 );
     } else {
       this.voice.osc.frequency.cancelScheduledValues(0);
-      this.voice.osc.frequency.setTargetAtTime( 440 * Math.pow(2,(this.notes[this.notes.length-1]-69)/12), 0, 0.05 );
+      console.log(this.notes);
+      this.voice.osc.frequency.setTargetAtTime( Note.midiToFreq(this.notes[this.notes.length-1]), 0, 0.05 );
     }
   };
   

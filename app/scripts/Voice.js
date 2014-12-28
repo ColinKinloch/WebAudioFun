@@ -5,13 +5,13 @@ function(Note){
   var Voice = function(context, mag, key)
   {
     //this.note = new Note();
-    this.key = key || undefined;
+    this.key = key || 69;
     this.env = context.createGain();
     this.osc = context.createOscillator();
     this.osc.connect(this.env);
     this.mag = mag || 0.0 ;
     this.type = 'sine';
-    this.sing(key, mag);
+    this.sing(this.key, this.mag);
   };
   Voice.prototype.connect = function(output)
   {
@@ -32,16 +32,9 @@ function(Note){
   };
   Voice.prototype.sing = function(key, mag)
   {
-    if(mag === 0)
-    {
-      this.key = undefined;
-    }
-    else
-    {
-      this.key = key;
-    }
+    this.key = key;
     this.osc.frequency.cancelScheduledValues(0);
-    this.osc.frequency.setTargetAtTime( Voice.getFreq(key),0, 0);
+    this.osc.frequency.setTargetAtTime( Note.midiToFreq(key),0, 0);
     this.env.gain.cancelScheduledValues(0);
     this.env.gain.setTargetAtTime(mag/127, 0, 0);
   };

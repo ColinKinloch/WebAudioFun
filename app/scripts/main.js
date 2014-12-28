@@ -20,8 +20,8 @@ require.config({
     }
   }
 });
-require([ 'jquery', 'stats', 'THREE', 'PolySynth', 'MonoSynth'],
-function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth )
+require([ 'jquery', 'stats', 'THREE', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq'],
+function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleSeq)
 {
   var t = window.performance.now();
   var time = window.performance.now();
@@ -47,6 +47,14 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth )
   gain.connect(panner);
   panner.connect(context.destination);
   inst.connect(gain);
+  
+  var seq = new SimpleSeq([
+    new Note('a', 0.5),
+    new Note('c#', 1),
+    new Note('g2', 2)
+  ]);
+  var msynth = new Instrument(context);
+  msynth.connect(gain);
   
   var onMidi = function(e)
   {
@@ -110,6 +118,7 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth )
     lis.setOrientation(obj.rotation.x, obj.rotation.y, obj.rotation.z,
                             obj.up.x, obj.up.y, obj.up.z);
   };
+  var ticker = 0;
   var loop = function(t, frame)
   {
     pads = navigator.getGamepads();
@@ -125,7 +134,16 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth )
       listenObj.translateY(y);
       listenObj.rotateOnAxis(new THREE.Vector3(1,0,0),y2*rotScale);
       listenObj.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale);
-      //moveListener(listenObj, listener);
+      moveListener(listenObj, listener);
+    }
+    var tick = Math.floor((t*0.000016)*120%2)
+    if(ticker != tick)
+    {
+      ticker = tick;
+      var note= seq.current();
+      msynth.update([0x80, note.getMidi(), 0]);
+      note= seq.next();
+      msynth.update([0x90, note.getMidi(), note.mag]);
     }
     /*
     var speed = 0.005;
