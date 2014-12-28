@@ -47,12 +47,86 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
   gain.connect(panner);
   panner.connect(context.destination);
   inst.connect(gain);
-  
   var seq = new SimpleSeq([
-    new Note('a', 0.5),
-    new Note('c#', 1),
-    new Note('g2', 2)
+    new Note('e4', 1),
+    new Note('d#4', 1),
+    new Note('e4', 1),
+    new Note('d#4', 1),
+    new Note('e4', 1),
+    new Note('b', 1),
+    new Note('d4', 1),
+    new Note('c4', 1),
+    new Note('a', 1),
+    new Note('a1', 1),
+    new Note('e2', 1),
+    new Note('a2', 1),
+    new Note('c', 1),
+    new Note('e', 1),
+    new Note('a', 1),
+    new Note('b', 1),
+    new Note('e1', 1),
+    new Note('e2', 1),
+    new Note('g#2', 1),
+    new Note('e', 1),
+    new Note('g#', 1),
+    new Note('b', 1),
+    new Note('c4', 1),
+    new Note('a1', 1),
+    new Note('e2', 1),
+    new Note('a2', 1),
+    new Note('e', 1),
+    new Note('e4', 1),
+    new Note('d#4', 1),
+    new Note('e4', 1),
+    new Note('d#4', 1),
+    new Note('e4', 1),
+    new Note('b', 1),
+    new Note('d4', 1),
+    new Note('c4', 1),
+    new Note('a', 1),
+    new Note('a1', 1),
+    new Note('e2', 1),
+    new Note('a2', 1),
+    new Note('c', 1),
+    new Note('e', 1),
+    new Note('a', 1),
+    new Note('b', 1),
+    new Note('e1', 1),
+    new Note('e2', 1),
+    new Note('g#2', 1),
+    new Note('c', 1),
+    new Note('c4', 1),
+    new Note('b', 1),
+    new Note('a', 1),
+    new Note('a1', 1),
+    new Note('e2', 1),
+    new Note('a2', 1),
+    new Note('b', 1),
+    new Note('c4', 1),
+    new Note('d4', 1),
+    new Note('e4', 1),
+    new Note('c2', 1),
+    new Note('g2', 1),
+    new Note('c', 1),
+    new Note('g', 1),
+    new Note('f4', 1),
+    new Note('e4', 1),
+    new Note('d4', 1),
+    new Note('g1', 1),
+    new Note('g2', 1),
+    new Note('b2', 1),
+    
+    new Note('e', 1),
+    new Note('e4', 1),
+    new Note('d4', 1),
+    new Note('c4', 1),
+    new Note('e1', 1),
+    new Note('e2', 1),
+    new Note('e3', 1),
+    new Note('e4', 1),
+    new Note('e5', 1),
   ]);
+  seq.bpm = 400;
   var msynth = new Instrument(context);
   msynth.connect(gain);
   
@@ -104,8 +178,14 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
   
   $('#volume').on('change mousemove',function(e){
     gain.gain.value = $(this).val();
+    $('#volumeout').html(gain.gain.value);
   });
   $('#volume').change();
+  $('#bpm').on('change mousemove',function(e){
+    seq.bpm = $(this).val();
+    $('#bpmout').html(seq.bpm);
+  });
+  $('#bpm').change();
   var listenObj = new THREE.Object3D();
   
   var pan = {
@@ -136,14 +216,14 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
       listenObj.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale);
       moveListener(listenObj, listener);
     }
-    var tick = Math.floor((t*0.000016)*120%2)
+    var tick = Math.floor((t*0.000016)*seq.bpm%2)
     if(ticker != tick)
     {
       ticker = tick;
       var note= seq.current();
       msynth.update([0x80, note.getMidi(), 0]);
       note= seq.next();
-      msynth.update([0x90, note.getMidi(), note.mag]);
+      msynth.update([0x90, note.getMidi(), note.mag*127]);
     }
     /*
     var speed = 0.005;

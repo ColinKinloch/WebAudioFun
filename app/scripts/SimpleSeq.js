@@ -1,5 +1,6 @@
 /*global define*/
 'use strict';
+//TODO Self timing
 define(['Sequencer', 'Note'],
 function(Sequencer ,  Note){
   var SimpleSeq = function(notes)
