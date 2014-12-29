@@ -137,7 +137,7 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
     new Note('e5', 1),
   ]);
   seq.bpm = 400;
-  var msynth = new Instrument(context);
+  var msynth = new MonoSynth(context);
   msynth.connect(gain);
   
   var onMidi = function(e)
@@ -220,9 +220,9 @@ function(  $      ,  Stats ,  THREE , Instrument ,  MonoSynth ,  Note ,  SimpleS
     {
       ticker = tick;
       var note= seq.current();
-      msynth.update([0x80, note.getMidi(), 0]);
+      //msynth.update([0x80, note.getMidi(), 0]);
       note= seq.next();
-      msynth.update([0x90, note.getMidi(), note.mag*127]);
+      msynth.update([0x90, note.getMidi(), note.mag*1]);
     }
     /*
     var speed = 0.005;

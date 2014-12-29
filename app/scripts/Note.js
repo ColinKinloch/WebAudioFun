@@ -5,7 +5,6 @@ define([],
 function(){
   var Note = function(key, mag)
   {
-    console.log(key);
     this.freq = Note.toFreq(key);
     this.mag = mag || key.mag/127 || 0.0;
     this.bend = 0.0;

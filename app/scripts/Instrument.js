@@ -5,6 +5,7 @@ function(Note){
   var Instrument = function(context)
   {
     this.notes = {};
+    this.order = [];
     this.sustain = 0;
     this.bend = 64;
     this.env = context.createGain();
@@ -17,6 +18,24 @@ function(Note){
   Instrument.prototype.note = function(key, mag)
   {
     this.notes[key] = mag;
+    
+    var i = this.order.indexOf(key);
+    if(mag===0)
+    {
+      if(i!==-1)
+      {
+        this.order.splice(i,1);
+      }
+    }
+    else
+    {
+      if(i!==-1)
+      {
+        this.order.splice(i,1);
+        
+      }
+      this.order.push(key);
+    }
   };
   Instrument.prototype.noteOn = function(key, mag)
   {

@@ -22,7 +22,6 @@ function(Synth ,  Voice, Note ){
   };
   
   PolySynth.prototype = Object.create(Synth.prototype);
-  
   PolySynth.prototype.constructor = PolySynth;
   
   PolySynth.prototype.update = function(midi)
