@@ -8,7 +8,8 @@ require.config({
     'bootstrap': '../bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap',
     'text': '../bower_components/requirejs-text/text',
     'stats': '../bower_components/stats.js/build/stats.min',
-    'THREE': '../bower_components/threejs/build/three'
+    'THREE': '../bower_components/threejs/build/three',
+    'dat-GUI': '../bower_components/dat-gui/build/dat.gui'
   },
   shim: {
     bootstrap: ['jquery'],
@@ -17,12 +18,30 @@ require.config({
     },
     THREE: {
       exports: 'THREE'
+    },
+    'dat-GUI': {
+      exports: 'dat'
     }
   }
 });
-require([ 'jquery', 'stats', 'THREE', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq', 'furElise'],
-function(  $      ,  Stats ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleSeq ,  furElise)
+require([ 'jquery', 'stats', 'dat-GUI', 'THREE', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq', 'furElise'],
+function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleSeq ,  furElise)
 {
+  var renderStat = new Stats();
+  var loopStat = new Stats();
+  $('#overlay').prepend(loopStat.domElement);
+  $('#overlay').prepend(renderStat.domElement);
+  
+  console.log(dat);
+  var gui = new dat.GUI();
+  
+  var scenef = gui.addFolder('Scene');
+  var sceneData = {
+    volume:0.5
+  };
+  
+  var synthf = gui.addFolder('Synth');
+  
   var canvas = $('#main');
   var scene = new THREE.Scene();
   
@@ -34,14 +53,6 @@ function(  $      ,  Stats ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleS
   var paused = true;
   
   var pads = navigator.getGamepads();
-  
-  var moveListener = function(obj, lis)
-  {
-    lis.setPosition(obj.position.x, obj.position.y, obj.position.z);
-    lis.setOrientation(obj.rotation.x, obj.rotation.y, obj.rotation.z,
-                            obj.up.x, obj.up.y, obj.up.z);
-  };
-  
   
   var light = new THREE.AmbientLight(0x0f0);
   scene.add(light);
@@ -66,29 +77,27 @@ function(  $      ,  Stats ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleS
   listenObj.position.set(0,0,-10);
   
   var midi;
-  var context = new AudioContext();
+  var tlist = new THREE.AudioListener();
+  var context = tlist.context;//new AudioContext();
   var gain = context.createGain();
-  var panner = context.createPanner();
-  panner.panningModel = 'HRTF';
-  panner.distanceModel = 'inverse';
-  var listener = context.listener;
-  listener.dopplerFactor = 1;
-  listener.speedOfSound = 343.3;
   
-  moveListener(camera, listener);
-  moveListener(listenObj, panner);
+  scenef.add(gain.gain, 'value').min(0.0).max(1).step(0.001);
+  
+  
+  var audio = new THREE.Audio(tlist);
+  audio.load('/res/audio/ele.wav');
+  listenObj.add(audio);
+  
+  camera.add(tlist);
   
   var inst = new PolySynth(context, {
     voices: 16
   });
-  //inst = new MonoSynth(context);
-  gain.connect(panner);
-  panner.connect(context.destination);
-  inst.connect(gain);
+  inst.connect(audio.panner);
   var seq = new SimpleSeq(furElise);
   seq.bpm = 400;
-  var msynth = new MonoSynth(context);
-  msynth.connect(gain);
+  var msynth = new PolySynth(context);
+  msynth.connect(audio.panner);
   
   var onMidi = function(e)
   {
@@ -102,27 +111,28 @@ function(  $      ,  Stats ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleS
   {
     console.log('dis',e);
   };
-  
-  navigator.requestMIDIAccess().then(function(r){
-    midi = r;
-    paused = false;
-    midi.onconnect = onMidiConnect;
-    midi.ondisconnect = onMidiDisconnect;
-    if (midi.inputs.length === 0)
-    {
-      console.error('no devices');
-    }
-    var inputs = midi.inputs.values();
-    for(var input = inputs.next(); input && !input.done; input = inputs.next())
-    {
-      console.log(input.value.name);
-      input.value.onmidimessage = onMidi;
-    }
-  },
-  function(e){
-    console.error('midi fail', e);
-  });
-  
+  if(navigator.requestMIDIAccess)
+  {
+    navigator.requestMIDIAccess().then(function(r){
+      midi = r;
+      paused = false;
+      midi.onconnect = onMidiConnect;
+      midi.ondisconnect = onMidiDisconnect;
+      if (midi.inputs.length === 0)
+      {
+        console.error('no devices');
+      }
+      var inputs = midi.inputs.values();
+      for(var input = inputs.next(); input && !input.done; input = inputs.next())
+      {
+        console.log(input.value.name);
+        input.value.onmidimessage = onMidi;
+      }
+    },
+    function(e){
+      console.error('midi fail', e);
+    });
+  }
   var width, height;
   var resize = function(e)
   {
@@ -138,17 +148,7 @@ function(  $      ,  Stats ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleS
   $(window).resize(resize);
   
   $(window).resize();
-  
-  $('#volume').on('change mousemove',function(){
-    gain.gain.value = $(this).val();
-    $('#volumeout').html(gain.gain.value);
-  });
-  $('#volume').change();
-  $('#bpm').on('change mousemove',function(){
-    seq.bpm = $(this).val();
-    $('#bpmout').html(seq.bpm);
-  });
-  $('#bpm').change();
+  synthf.add(seq, 'bpm').min(60).max(1000);
   
   var ticker = 0;
   var loop = function(t/*, frame*/)
@@ -176,38 +176,36 @@ function(  $      ,  Stats ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleS
         camera.rotation.set(0,0,0);
       }
       
-      moveListener(camera, listener);
-      moveListener(listenObj, panner);
     }
     var tick = Math.floor((t*0.000016)*seq.bpm%2);
     if(ticker !== tick)
     {
       ticker = tick;
-      var note= seq.current();
+      var note = seq.current();
       msynth.update([0x80, note.getMidi(), 0]);
       note= seq.next();
       msynth.update([0x90, note.getMidi(), note.mag*10]);
     }
-    /*
-    var speed = 0.005;
-    var dist = 3;
-    listener.setPosition(Math.cos(t*speed)*dist,Math.sin(t*speed)*dist,0);
-    */
   };
   var main = function()
   {
     var now = window.performance.now();
     var frame = now - time;
     time = now;
+    loopStat.begin();
     if(!paused)
     {
       loop(t,frame);
       t += frame;
     }
+    loopStat.end();
   };
   var draw = function()
   {
+    renderStat.begin();
+    
     renderer.render(scene, camera);
+    renderStat.end();
     window.requestAnimationFrame(draw);
   };
   draw();

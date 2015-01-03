@@ -8,7 +8,8 @@
     "requirejs": "~2.1.15",
     "gl-matrix": "~2.2.1",
     "threejs": "*",
-    "stats.js": "*"
+    "stats.js": "*",
+    "dat-gui": "~0.5.0"
   },
   "devDependencies": {}
 }
