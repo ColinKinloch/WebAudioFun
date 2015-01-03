@@ -77,18 +77,21 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   listenObj.position.set(0,0,-10);
   
   var midi;
-  var tlist = new THREE.AudioListener();
-  var context = tlist.context;//new AudioContext();
+  var listener = new THREE.AudioListener();
+  var context = listener.context;//new AudioContext();
   var gain = context.createGain();
   
-  scenef.add(gain.gain, 'value').min(0.0).max(1).step(0.001);
   
   
-  var audio = new THREE.Audio(tlist);
+  var audio = new THREE.Audio(listener);
   audio.load('/res/audio/ele.wav');
+  audio.setLoop(-1);
   listenObj.add(audio);
   
-  camera.add(tlist);
+  
+  scenef.add(audio.gain.gain, 'value').min(0.0).max(1).step(0.001).name('Volume');
+  
+  camera.add(listener);
   
   var inst = new PolySynth(context, {
     voices: 16
@@ -148,7 +151,7 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   $(window).resize(resize);
   
   $(window).resize();
-  synthf.add(seq, 'bpm').min(60).max(1000);
+  synthf.add(seq, 'bpm').min(60).max(1000).name('BPM');
   
   var ticker = 0;
   var loop = function(t/*, frame*/)
@@ -174,6 +177,10 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
       {
         camera.position.set(0,0,0);
         camera.rotation.set(0,0,0);
+      }
+      if(pad.buttons[3].pressed)
+      {
+        audio.gain.gain.value = !audio.gain.gain.value;
       }
       
     }
