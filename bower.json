@@ -9,7 +9,9 @@
     "gl-matrix": "~2.2.1",
     "threejs": "*",
     "stats.js": "*",
-    "dat-gui": "~0.5.0"
+    "dat-gui": "~0.5.0",
+    "cannon.js": "~0.6.1",
+    "requirejs-text": "~2.0.13"
   },
   "devDependencies": {}
 }

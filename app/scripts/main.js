@@ -13,7 +13,8 @@ require.config({
     'glTF-parser': '../lib/gltf/glTF-parser',
     'glTFLoaderUtils': '../lib/gltf/glTFLoaderUtils',
     'glTFLoader': '../lib/gltf/glTFLoader',
-    'glTFAnimation': '../lib/gltf/glTFAnimation'
+    'glTFAnimation': '../lib/gltf/glTFAnimation',
+    'CANNON': '../bower_components/cannon.js/build/cannon'
   },
   shim: {
     bootstrap: ['jquery'],
@@ -22,6 +23,9 @@ require.config({
     },
     THREE: {
       exports: 'THREE'
+    },
+    CANNON: {
+      exports: 'CANNON'
     },
     'dat-GUI': {
       exports: 'dat'
@@ -42,13 +46,34 @@ require.config({
     }
   }
 });
-require([ 'jquery', 'stats', 'dat-GUI', 'THREE', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq', 'furElise', 'glTFLoaderUtils', 'glTFLoader'],
-function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleSeq ,  furElise)
+require([ 'jquery', 'stats', 'dat-GUI', 'THREE', 'CANNON', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq', 'furElise', 'glTFLoader'],
+function(  $      ,  Stats ,  dat     ,  THREE ,  CANNON ,  PolySynth ,  MonoSynth ,  Note ,  SimpleSeq ,  furElise)
 {
   var renderStat = new Stats();
   var loopStat = new Stats();
   $('#overlay').prepend(loopStat.domElement);
   $('#overlay').prepend(renderStat.domElement);
+  
+  
+  var world = new CANNON.World();
+  world.gravity.set(0,0,-9.82);
+  world.broadphase = new CANNON.NaiveBroadphase();
+  
+  var sphereBody = new CANNON.Body({
+    mass: 5
+  });
+  var sphereShape = new CANNON.Sphere(1);
+  sphereBody.addShape(sphereShape);
+  sphereBody.position.set(0,0,100);
+  sphereBody.angularVelocity.set(0,10,0);
+  world.add(sphereBody);
+  
+  var groundBody = new CANNON.Body({
+    mass: 0
+  });
+  var groundShape = new CANNON.Plane();
+  groundBody.addShape(groundShape);
+  world.add(groundBody);
   
   var gui = new dat.GUI();
   
@@ -64,6 +89,8 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   
   var renderer = new THREE.WebGLRenderer({canvas: canvas[0], antialias: false});
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.up.set(0,0,1);
+  camera.lookAt(new THREE.Vector3(0,1,0));
   
   var monster;
   var loader = new THREE.glTFLoader;
@@ -73,7 +100,7 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
     var scale = 0.001;
     monster = data.scene;
     monster.scale.set(scale, scale, scale);
-    monster.rotation.x = -0.5*Math.PI;
+    //monster.rotation.x = -0.5*Math.PI;
     scene.add(monster);
     for(var i=0; i< data.animations.length; i++)
     {
@@ -193,11 +220,15 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   synthf.add(seq, 'bpm').min(60).max(1000).name('BPM');
   
   var ticker = 0;
-  var loop = function(t/*, frame*/)
+  var loop = function(t, frame)
   {
     pads = navigator.getGamepads();
     THREE.glTFAnimator.update();
-    var pad = pads[1];
+    world.step(frame/1000);
+    var pad = pads[0];
+    listenObj.position.copy(sphereBody.position);
+    listenObj.quaternion.copy(sphereBody.quaternion);
+    
     if(pad !== undefined)
     {
       var x = pad.axes[0];
@@ -218,9 +249,8 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
       camera.rotateOnAxis(new THREE.Vector3(1,0,0),y2*rotScale.y);
       camera.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale.x);
       
-      listenObj.position.x = Math.cos(t*0.005)*(5);
-      listenObj.position.z = Math.sin(t*0.005)*(5);
-      
+      /*listenObj.position.x = Math.cos(t*0.005)*(5);
+      listenObj.position.z = Math.sin(t*0.005)*(5);*/
       if(pad.buttons[5].pressed)
       {
         camera.position.set(0,0,0);
