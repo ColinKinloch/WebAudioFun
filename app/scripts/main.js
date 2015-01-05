@@ -10,7 +10,7 @@ require.config({
     'stats': '../bower_components/stats.js/build/stats.min',
     'THREE': '../bower_components/threejs/build/three',
     'dat-GUI': '../bower_components/dat-gui/build/dat.gui',
-    'glTF-parser': '../lib/gltf/glTF-parser',
+    'glTF-parser': '',
     'glTFLoaderUtils': '../lib/gltf/glTFLoaderUtils',
     'glTFLoader': '../lib/gltf/glTFLoader',
     'glTFAnimation': '../lib/gltf/glTFAnimation',
@@ -39,9 +39,9 @@ require.config({
     'glTFLoader': {
       exports: 'THREE',
       deps: [
-        'glTF-parser',
-        'glTFLoaderUtils',
-        'glTFAnimation'
+        '../lib/gltf/glTF-parser',
+        '../lib/gltf/glTFLoaderUtils',
+        '../lib/gltf/glTFAnimation'
       ]
     }
   }
