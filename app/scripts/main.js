@@ -9,7 +9,11 @@ require.config({
     'text': '../bower_components/requirejs-text/text',
     'stats': '../bower_components/stats.js/build/stats.min',
     'THREE': '../bower_components/threejs/build/three',
-    'dat-GUI': '../bower_components/dat-gui/build/dat.gui'
+    'dat-GUI': '../bower_components/dat-gui/build/dat.gui',
+    'glTF-parser': '../lib/gltf/glTF-parser',
+    'glTFLoaderUtils': '../lib/gltf/glTFLoaderUtils',
+    'glTFLoader': '../lib/gltf/glTFLoader',
+    'glTFAnimation': '../lib/gltf/glTFAnimation'
   },
   shim: {
     bootstrap: ['jquery'],
@@ -21,10 +25,24 @@ require.config({
     },
     'dat-GUI': {
       exports: 'dat'
+    },
+    'glTFLoaderUtils': {
+      exports: 'THREE'
+    },
+    'glTFAnimation': {
+      exports: 'THREE'
+    },
+    'glTFLoader': {
+      exports: 'THREE',
+      deps: [
+        'glTF-parser',
+        'glTFLoaderUtils',
+        'glTFAnimation'
+      ]
     }
   }
 });
-require([ 'jquery', 'stats', 'dat-GUI', 'THREE', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq', 'furElise'],
+require([ 'jquery', 'stats', 'dat-GUI', 'THREE', 'PolySynth', 'MonoSynth', 'Note', 'SimpleSeq', 'furElise', 'glTFLoaderUtils', 'glTFLoader'],
 function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note ,  SimpleSeq ,  furElise)
 {
   var renderStat = new Stats();
@@ -32,7 +50,6 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   $('#overlay').prepend(loopStat.domElement);
   $('#overlay').prepend(renderStat.domElement);
   
-  console.log(dat);
   var gui = new dat.GUI();
   
   var scenef = gui.addFolder('Scene');
@@ -48,13 +65,32 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   var renderer = new THREE.WebGLRenderer({canvas: canvas[0], antialias: false});
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   
+  var monster;
+  var loader = new THREE.glTFLoader;
+  console.log(loader);
+  loader.load('/res/models/monster.json', function(data){
+    console.log(data);
+    var scale = 0.001;
+    monster = data.scene;
+    monster.scale.set(scale, scale, scale);
+    monster.rotation.x = -0.5*Math.PI;
+    scene.add(monster);
+    for(var i=0; i< data.animations.length; i++)
+    {
+      var anim = data.animations[i];
+      anim.loop = true;
+      anim.duration = 3;
+      anim.play();
+    }
+  });
+  
   var t = window.performance.now();
   var time = window.performance.now();
   var paused = true;
   
   var pads = navigator.getGamepads();
   
-  var light = new THREE.AmbientLight(0x0f0);
+  var light = new THREE.AmbientLight(0xffffff);
   scene.add(light);
   
   var plight = new THREE.PointLight(0xff0, 1, 1000);
@@ -90,6 +126,9 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   
   
   scenef.add(audio.gain.gain, 'value').min(0.0).max(1).step(0.001).name('Volume');
+  scenef.add(listener.context.listener, 'dopplerFactor').min(0.0).max(2).name('Doppler Effect');
+  scenef.add(listener.context.listener, 'speedOfSound').min(0.0).max(686).name('Speed of Sound');
+  
   
   camera.add(listener);
   
@@ -157,7 +196,8 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   var loop = function(t/*, frame*/)
   {
     pads = navigator.getGamepads();
-    var pad = pads[0];
+    THREE.glTFAnimator.update();
+    var pad = pads[1];
     if(pad !== undefined)
     {
       var x = pad.axes[0];
@@ -166,14 +206,22 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
       var y2 = pad.axes[3];
       var movSpeed = new THREE.Vector2(0.1,0.1);
       var rotScale = new THREE.Vector2(-0.01, -0.01);
-      camera.translateX(x*movSpeed.x);
-      camera.translateZ(y*movSpeed.y);
+      var run = 1;
+      
+      if(pad.buttons[2].pressed)
+      {
+        run = 100;
+      }
+      
+      camera.translateX(x*movSpeed.x*run);
+      camera.translateZ(y*movSpeed.y*run);
       camera.rotateOnAxis(new THREE.Vector3(1,0,0),y2*rotScale.y);
       camera.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale.x);
       
       listenObj.position.x = Math.cos(t*0.005)*(5);
       listenObj.position.z = Math.sin(t*0.005)*(5);
-      if(pad.buttons[9].pressed)
+      
+      if(pad.buttons[5].pressed)
       {
         camera.position.set(0,0,0);
         camera.rotation.set(0,0,0);
@@ -210,7 +258,6 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  PolySynth ,  MonoSynth ,  Note
   var draw = function()
   {
     renderStat.begin();
-    
     renderer.render(scene, camera);
     renderStat.end();
     window.requestAnimationFrame(draw);
