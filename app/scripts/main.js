@@ -90,7 +90,8 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  CANNON ,  PolySynth ,  MonoSyn
   var renderer = new THREE.WebGLRenderer({canvas: canvas[0], antialias: false});
   var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.up.set(0,0,1);
-  camera.lookAt(new THREE.Vector3(0,1,0));
+  camera.position.set(10,1,1);
+  camera.lookAt(new THREE.Vector3(0,1,1));
   
   var monster;
   var loader = new THREE.glTFLoader;
@@ -120,24 +121,38 @@ function(  $      ,  Stats ,  dat     ,  THREE ,  CANNON ,  PolySynth ,  MonoSyn
   var light = new THREE.AmbientLight(0xffffff);
   scene.add(light);
   
-  var plight = new THREE.PointLight(0xff0, 1, 1000);
+  var plight = new THREE.PointLight(new THREE.Color(0xffffff), 1, 1000);
   plight.position.set( 25, 50, 50 );
   scene.add(plight);
   
   var listenObj = new THREE.Mesh(
     new THREE.SphereGeometry(1,20,10),
     new THREE.MeshPhongMaterial({
-      ambient: 0xaaa,
-      color: new THREE.Color(0x0ff),
-      specular: 0x009900,
+      color: new THREE.Color(0x0066ff),
+      ambient: new THREE.Color(0x050505),
+      emissive: new THREE.Color(0x000000),
+      specular: new THREE.Color(0x999999),
       shininess: 30,
-      diffuse: new THREE.Color(0x000),
       shading: THREE.FlatShading,
       vertexColors: THREE.FaceColors
     })
   );
   scene.add(listenObj);
   listenObj.position.set(0,0,-10);
+  
+  var ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(100,100),
+    new THREE.MeshPhongMaterial({
+      color: new THREE.Color(0x66ff66),
+      ambient: new THREE.Color(0x010101),
+      emissive: new THREE.Color(0x000000),
+      specular: new THREE.Color(0x009900),
+      shininess: 30,
+      shading: THREE.FlatShading,
+      vertexColors: THREE.FaceColors
+    })
+  );
+  scene.add(ground)
   
   var midi;
   var listener = new THREE.AudioListener();
