@@ -38,7 +38,6 @@ function(Synth,   Voice ,  Note){
       this.voice.env.gain.setTargetAtTime(0.0, 0, 0.05 );
     } else {
       this.voice.osc.frequency.cancelScheduledValues(0);
-      console.log(this.notes);
       this.voice.osc.frequency.setTargetAtTime( Note.midiToFreq(this.order[this.order.length-1]), 0, 0.05 );
     }
   };

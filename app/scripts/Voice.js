@@ -2,7 +2,7 @@
 'use strict';
 define(['Note'],
 function(Note){
-  var Voice = function(context, mag, key)
+  var Voice = function(context, key, mag)
   {
     //this.note = new Note();
     this.key = key || 69;

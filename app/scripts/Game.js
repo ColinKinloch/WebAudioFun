@@ -14,7 +14,7 @@ function(THREE ,  CANNON){
     
     this.camera = new THREE.PerspectiveCamera(75, this.width/this.height, 0.1, 1000);
     this.camera.up.set(0,0,1);
-    this.camera.position.set(10,1,1);
+    this.camera.position.set(10,1,10);
     this.camera.lookAt(new THREE.Vector3(0,1,1));
     this.listener = new THREE.AudioListener();
     this.camera.add(this.listener);

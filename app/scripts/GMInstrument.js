@@ -24,12 +24,12 @@ function(Instrument ,  Note){
       key: midi[1],
       mag: midi[2]
     };
-    console.log(m.type,m.key,m.mag);
+    //console.log(m.type,m.key,m.mag);
     switch(m.type)
     {
       case 0x90://down
         var note = new Note(m);
-        console.log(note.getNote(), note.mag);
+        //console.log(note.getNote(), note.mag);
         if(m.mag !== 0)
         {
           this.noteOn(m.key, m.mag);

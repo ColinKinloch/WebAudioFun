@@ -43,8 +43,8 @@ require.config({
     }
   }
 });
-require([ 'jquery', 'stats', 'dat-GUI', 'Game', 'THREE', 'CANNON', 'PolySynth', 'MonoSynth', 'SimpleSeq', 'furElise', 'glTF/glTFLoader'],
-function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth ,  MonoSynth ,  SimpleSeq ,  furElise)
+require([ 'jquery', 'stats', 'dat-GUI', 'Game', 'THREE', 'CANNON', 'Note', 'PolySynth', 'MonoSynth', 'SimpleSeq', 'furElise', 'glTF/glTFLoader'],
+function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  PolySynth ,  MonoSynth ,  SimpleSeq ,  furElise)
 {
   var renderStat = new Stats();
   var loopStat = new Stats();
@@ -61,8 +61,8 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth , 
   });
   var sphereShape = new CANNON.Sphere(1);
   sphereBody.addShape(sphereShape);
-  sphereBody.position.set(0,0,100);
-  sphereBody.angularVelocity.set(0,10,0);
+  sphereBody.position.set(0,0,10);
+  //sphereBody.angularVelocity.set(0,10,0);
   world.add(sphereBody);
   
   var groundBody = new CANNON.Body({
@@ -133,7 +133,6 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth , 
     })
   );
   scene.add(listenObj);
-  listenObj.position.set(0,0,-10);
   
   var ground = new THREE.Mesh(
     new THREE.PlaneGeometry(10000, 10000),
@@ -156,7 +155,7 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth , 
   
   
   var audio = new THREE.Audio(listener);
-  audio.load('/res/audio/ele.wav');
+  //audio.load('/res/audio/ele.wav');
   audio.setLoop(-1);
   listenObj.add(audio);
   
@@ -172,8 +171,56 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth , 
   inst.connect(audio.panner);
   var seq = new SimpleSeq(furElise);
   seq.bpm = 400;
+  
+  var gap = 1/8;
+  var shep1 = new SimpleSeq([
+    new Note('c2', gap*0),
+    new Note('d2', gap*1),
+    new Note('e2', gap*2),
+    new Note('f2', gap*3),
+    new Note('g2', gap*4),
+    new Note('a2', gap*5),
+    new Note('b2', gap*6),
+    new Note('c3', gap*7),
+    new Note('d3', 1),
+    new Note('e3', 1),
+    new Note('f3', 1),
+    new Note('g3', 1),
+    new Note('a3', 1),
+    new Note('b3', 1),
+    new Note('c4', 1),
+    new Note('d4', 1),
+    new Note('e4', 1),
+    new Note('f4', 1),
+    new Note('g4', 1),
+    new Note('a4', 1),
+    new Note('b4', gap*7),
+    new Note('c5', gap*6),
+    new Note('d5', gap*5),
+    new Note('e5', gap*4),
+    new Note('f5', gap*3),
+    new Note('g5', gap*2),
+    new Note('a5', gap*1),
+    new Note('b5', gap*0)
+  ]);
+  var shep2 = Object.create(shep1);
+  shep2.i = 7;
+  var shep3 = Object.create(shep1);
+  shep3.i = 14;
+  var shep4 = Object.create(shep1);
+  shep4.i = 21;
+  
   var msynth = new PolySynth(context);
   msynth.connect(audio.panner);
+  var ShepSynth = MonoSynth;
+  var shepsynth1 = new ShepSynth(context);
+  var shepsynth2 = new ShepSynth(context);
+  var shepsynth3 = new ShepSynth(context);
+  var shepsynth4 = new ShepSynth(context);
+  shepsynth1.connect(audio.panner);
+  shepsynth2.connect(audio.panner);
+  shepsynth3.connect(audio.panner);
+  shepsynth4.connect(audio.panner);
   
   var onMidi = function(e)
   {
@@ -263,6 +310,9 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth , 
       camera.translateZ(y*movSpeed.y*run);
       camera.rotateOnAxis(new THREE.Vector3(1,0,0),y2*rotScale.y);
       camera.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale.x);
+      //camera.lookAt(listenObj.position);
+      var force = new CANNON.Vec3(run*y, run*x, 0);
+      //sphereBody.applyImpulse(force, sphereBody.position);
       
       /*listenObj.position.x = Math.cos(t*0.005)*(5);
       listenObj.position.z = Math.sin(t*0.005)*(5);*/
@@ -282,9 +332,26 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  PolySynth , 
     {
       ticker = tick;
       var note = seq.current();
-      msynth.update([0x80, note.getMidi(), 0]);
-      note= seq.next();
-      msynth.update([0x90, note.getMidi(), note.mag*10]);
+      var note1 = shep1.current();
+      var note2 = shep2.current();
+      var note3 = shep3.current();
+      var note4 = shep4.current();
+      //msynth.update([0x80, note.getMidi(), 0]);
+      console.log(note1.mag+note2.mag+note3.mag+note4.mag, note1.getNote(), note2.getNote(), note3.getNote(), note4.getNote());
+      shepsynth1.noteOff(note1.getMidi(), 0);
+      shepsynth2.noteOff(note2.getMidi(), 0);
+      shepsynth3.noteOff(note3.getMidi(), 0);
+      shepsynth4.noteOff(note4.getMidi(), 0);
+      note = seq.next();
+      note1 = shep1.next();
+      note2 = shep2.next();
+      note3 = shep3.next();
+      note4 = shep4.next();
+      //msynth.update([0x90, note.getMidi(), note.mag*10]);
+      shepsynth1.noteOn(note1.getMidi(), note1.mag*10);
+      shepsynth2.noteOn(note2.getMidi(), note2.mag*10);
+      shepsynth3.noteOn(note3.getMidi(), note3.mag*10);
+      shepsynth4.noteOn(note4.getMidi(), note4.mag*10);
     }
   };
   var main = function()
