@@ -42,6 +42,10 @@ function(Synth ,  Voice, Note ){
   /**/
   PolySynth.prototype.noteOn = function(key, mag)
   {
+    if(mag===0)
+    {
+      this.noteOff(key, mag);
+    }
     Synth.prototype.noteOn.call(this, key, mag);
     //var voice = this.active[key] || Voice.getSilent(this.voices);//this.voices[i];
     var voice;

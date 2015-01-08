@@ -1,0 +1,467 @@
+{
+    "accessors": {
+        "accessor_21": {
+            "bufferView": "bufferView_29",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "componentType": 5123,
+            "count": 1296,
+            "type": "SCALAR"
+        },
+        "accessor_23": {
+            "bufferView": "bufferView_30",
+            "byteOffset": 0,
+            "byteStride": 12,
+            "componentType": 5126,
+            "count": 1296,
+            "max": [
+                0.999719,
+                0.984532,
+                1
+            ],
+            "min": [
+                -0.99972,
+                -0.984531,
+                0.0423147
+            ],
+            "type": "VEC3"
+        },
+        "accessor_25": {
+            "bufferView": "bufferView_30",
+            "byteOffset": 15552,
+            "byteStride": 12,
+            "componentType": 5126,
+            "count": 1296,
+            "max": [
+                0.980162,
+                0.995282,
+                0.98951
+            ],
+            "min": [
+                -0.980162,
+                -0.995283,
+                -1
+            ],
+            "type": "VEC3"
+        },
+        "accessor_27": {
+            "bufferView": "bufferView_30",
+            "byteOffset": 31104,
+            "byteStride": 8,
+            "componentType": 5126,
+            "count": 1296,
+            "max": [
+                0.518379,
+                0.997679
+            ],
+            "min": [
+                0.00232095,
+                0.00232089
+            ],
+            "type": "VEC2"
+        }
+    },
+    "animations": {},
+    "asset": {
+        "generator": "collada2gltf@66c294c04a629b0207eb4168bbbd054c6f97fad5",
+        "premultipliedAlpha": true,
+        "profile": "WebGL 1.0.2",
+        "version": 0.8
+    },
+    "bufferViews": {
+        "bufferView_29": {
+            "buffer": "Ball2",
+            "byteLength": 2592,
+            "byteOffset": 0,
+            "target": 34963
+        },
+        "bufferView_30": {
+            "buffer": "Ball2",
+            "byteLength": 41472,
+            "byteOffset": 2592,
+            "target": 34962
+        }
+    },
+    "buffers": {
+        "Ball2": {
+            "byteLength": 44064,
+            "type": "arraybuffer",
+            "uri": "Ball2.bin"
+        }
+    },
+    "images": {
+        "Material_001_Diffuse_Color": {
+            "uri": "Material.001%20Diffuse%20Color.png"
+        },
+        "Material_001_Diffuse_Color_001": {
+            "uri": "Material.001%20Diffuse%20Color.001.png"
+        },
+        "Material_001_Normal": {
+            "uri": "Material.001%20Normal.png"
+        },
+        "Material_001_Specular_Intensity": {
+            "uri": "Material.001%20Specular%20Intensity.png"
+        }
+    },
+    "lights": {
+        "Point-light": {
+            "point": {
+                "color": [
+                    3,
+                    3,
+                    3
+                ],
+                "constantAttenuation": 1,
+                "linearAttenuation": 0,
+                "quadraticAttenuation": 0.00159997
+            },
+            "type": "point"
+        }
+    },
+    "materials": {
+        "Material_001-effect": {
+            "instanceTechnique": {
+                "technique": "technique0",
+                "values": {
+                    "ambient": [
+                        0,
+                        0,
+                        0,
+                        1
+                    ],
+                    "bump": "texture_Material_001_Normal",
+                    "diffuse": "texture_Material_001_Diffuse_Color_001",
+                    "emission": [
+                        0,
+                        0,
+                        0,
+                        1
+                    ],
+                    "shininess": 50,
+                    "specular": "texture_Material_001_Specular_Intensity"
+                }
+            },
+            "name": "Material_001"
+        }
+    },
+    "meshes": {
+        "Sphere-mesh": {
+            "name": "Sphere",
+            "primitives": [
+                {
+                    "attributes": {
+                        "NORMAL": "accessor_25",
+                        "POSITION": "accessor_23",
+                        "TEXCOORD_0": "accessor_27"
+                    },
+                    "indices": "accessor_21",
+                    "material": "Material_001-effect",
+                    "primitive": 4
+                }
+            ]
+        }
+    },
+    "nodes": {
+        "Point": {
+            "children": [],
+            "light": "Point-light",
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "name": "Point"
+        },
+        "Sphere": {
+            "children": [],
+            "matrix": [
+                -4.37114e-08,
+                0,
+                -1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                -4.37114e-08,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "meshes": [
+                "Sphere-mesh"
+            ],
+            "name": "Sphere"
+        },
+        "Sphere_001": {
+            "children": [],
+            "matrix": [
+                -4.37114e-08,
+                0,
+                -1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                -1,
+                0,
+                4.37114e-08,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "meshes": [
+                "Sphere-mesh"
+            ],
+            "name": "Sphere_001"
+        },
+        "node_3": {
+            "children": [
+                "Sphere",
+                "Point",
+                "Sphere_001"
+            ],
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "name": "Y_UP_Transform"
+        }
+    },
+    "programs": {
+        "program_0": {
+            "attributes": [
+                "a_normal",
+                "a_position",
+                "a_texcoord0"
+            ],
+            "fragmentShader": "Ball20FS",
+            "vertexShader": "Ball20VS"
+        }
+    },
+    "samplers": {
+        "sampler_0": {
+            "magFilter": 9729,
+            "minFilter": 9729,
+            "wrapS": 10497,
+            "wrapT": 10497
+        }
+    },
+    "scene": "defaultScene",
+    "scenes": {
+        "defaultScene": {
+            "nodes": [
+                "node_3"
+            ]
+        }
+    },
+    "shaders": {
+        "Ball20FS": {
+            "type": 35632,
+            "uri": "Ball20FS.glsl"
+        },
+        "Ball20VS": {
+            "type": 35633,
+            "uri": "Ball20VS.glsl"
+        }
+    },
+    "skins": {},
+    "techniques": {
+        "technique0": {
+            "parameters": {
+                "ambient": {
+                    "type": 35666
+                },
+                "bump": {
+                    "type": 35678
+                },
+                "diffuse": {
+                    "type": 35678
+                },
+                "emission": {
+                    "type": 35666
+                },
+                "light0Color": {
+                    "type": 35665,
+                    "value": [
+                        3,
+                        3,
+                        3
+                    ]
+                },
+                "light0ConstantAttenuation": {
+                    "type": 5126,
+                    "value": 1
+                },
+                "light0LinearAttenuation": {
+                    "type": 5126,
+                    "value": 0
+                },
+                "light0QuadraticAttenuation": {
+                    "type": 5126,
+                    "value": 0.00159997
+                },
+                "light0Transform": {
+                    "semantic": "MODELVIEW",
+                    "source": "Point",
+                    "type": 35676
+                },
+                "modelViewMatrix": {
+                    "semantic": "MODELVIEW",
+                    "type": 35676
+                },
+                "normal": {
+                    "semantic": "NORMAL",
+                    "type": 35665
+                },
+                "normalMatrix": {
+                    "semantic": "MODELVIEWINVERSETRANSPOSE",
+                    "type": 35675
+                },
+                "position": {
+                    "semantic": "POSITION",
+                    "type": 35665
+                },
+                "projectionMatrix": {
+                    "semantic": "PROJECTION",
+                    "type": 35676
+                },
+                "shininess": {
+                    "type": 5126
+                },
+                "specular": {
+                    "type": 35678
+                },
+                "texcoord0": {
+                    "semantic": "TEXCOORD_0",
+                    "type": 35664
+                }
+            },
+            "pass": "defaultPass",
+            "passes": {
+                "defaultPass": {
+                    "details": {
+                        "commonProfile": {
+                            "extras": {
+                                "doubleSided": false
+                            },
+                            "lightingModel": "Phong",
+                            "parameters": [
+                                "ambient",
+                                "bump",
+                                "diffuse",
+                                "emission",
+                                "light0Color",
+                                "light0ConstantAttenuation",
+                                "light0LinearAttenuation",
+                                "light0QuadraticAttenuation",
+                                "light0Transform",
+                                "modelViewMatrix",
+                                "normalMatrix",
+                                "projectionMatrix",
+                                "shininess",
+                                "specular"
+                            ],
+                            "texcoordBindings": {
+                                "bump": "TEXCOORD_0",
+                                "diffuse": "TEXCOORD_0",
+                                "specular": "TEXCOORD_0"
+                            }
+                        },
+                        "type": "COLLADA-1.4.1/commonProfile"
+                    },
+                    "instanceProgram": {
+                        "attributes": {
+                            "a_normal": "normal",
+                            "a_position": "position",
+                            "a_texcoord0": "texcoord0"
+                        },
+                        "program": "program_0",
+                        "uniforms": {
+                            "u_ambient": "ambient",
+                            "u_bump": "bump",
+                            "u_diffuse": "diffuse",
+                            "u_emission": "emission",
+                            "u_light0Color": "light0Color",
+                            "u_light0ConstantAttenuation": "light0ConstantAttenuation",
+                            "u_light0LinearAttenuation": "light0LinearAttenuation",
+                            "u_light0QuadraticAttenuation": "light0QuadraticAttenuation",
+                            "u_light0Transform": "light0Transform",
+                            "u_modelViewMatrix": "modelViewMatrix",
+                            "u_normalMatrix": "normalMatrix",
+                            "u_projectionMatrix": "projectionMatrix",
+                            "u_shininess": "shininess",
+                            "u_specular": "specular"
+                        }
+                    },
+                    "states": {
+                        "enable": [
+                            2884,
+                            2929
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "textures": {
+        "texture_Material_001_Diffuse_Color_001": {
+            "format": 6408,
+            "internalFormat": 6408,
+            "sampler": "sampler_0",
+            "source": "Material_001_Diffuse_Color_001",
+            "target": 3553,
+            "type": 5121
+        },
+        "texture_Material_001_Normal": {
+            "format": 6408,
+            "internalFormat": 6408,
+            "sampler": "sampler_0",
+            "source": "Material_001_Normal",
+            "target": 3553,
+            "type": 5121
+        },
+        "texture_Material_001_Specular_Intensity": {
+            "format": 6408,
+            "internalFormat": 6408,
+            "sampler": "sampler_0",
+            "source": "Material_001_Specular_Intensity",
+            "target": 3553,
+            "type": 5121
+        }
+    }
+}

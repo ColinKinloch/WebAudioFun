@@ -10,7 +10,7 @@ require.config({
     'stats': '../bower_components/stats.js/build/stats.min',
     'THREE': '../bower_components/threejs/build/three',
     'dat-GUI': '../bower_components/dat-gui/build/dat.gui',
-    'glTF': '../lib/gltf/',
+    'glTF': '../bower_components/glTF/loaders/',
     'CANNON': '../bower_components/cannon.js/build/cannon'
   },
   shim: {
@@ -27,50 +27,33 @@ require.config({
     'dat-GUI': {
       exports: 'dat'
     },
-    'glTF/glTFLoaderUtils': {
+    'glTF/threejs/glTFLoaderUtils': {
       exports: 'THREE'
     },
-    'glTF/glTFAnimation': {
+    'glTF/threejs/glTFAnimation': {
       exports: 'THREE'
     },
-    'glTF/glTFLoader': {
+    'glTF/threejs/glTFLoader': {
       exports: 'THREE',
       deps: [
+        'THREE',
         'glTF/glTF-parser',
-        'glTF/glTFLoaderUtils',
-        'glTF/glTFAnimation'
+        'glTF/threejs/glTFLoaderUtils',
+        'glTF/threejs/glTFAnimation'
       ]
     }
   }
 });
-require([ 'jquery', 'stats', 'dat-GUI', 'Game', 'THREE', 'CANNON', 'Note', 'PolySynth', 'MonoSynth', 'SimpleSeq', 'furElise', 'glTF/glTFLoader'],
-function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  PolySynth ,  MonoSynth ,  SimpleSeq ,  furElise)
+require([ 'jquery', 'stats', 'dat-GUI', 'ThisGame', 'THREE', 'CANNON', 'Note', 'PolySynth', 'MonoSynth', 'GoodSeq', 'SimpleSeq', 'CamTracker', 'furElise', 'furEliseGood', 'glTF/threejs/glTFLoader'],
+function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  PolySynth ,  MonoSynth ,  SequencerNew , SimpleSeq ,  CamTracker ,  furElise ,  furEliseGood)
 {
+  var canvas = $('#main');
+  
   var renderStat = new Stats();
   var loopStat = new Stats();
   $('#overlay').prepend(loopStat.domElement);
   $('#overlay').prepend(renderStat.domElement);
   
-  var canvas = $('#main');
-  var g = new Game(canvas[0]);
-  
-  var world = g.world;
-  
-  var sphereBody = new CANNON.Body({
-    mass: 5
-  });
-  var sphereShape = new CANNON.Sphere(1);
-  sphereBody.addShape(sphereShape);
-  sphereBody.position.set(0,0,10);
-  //sphereBody.angularVelocity.set(0,10,0);
-  world.add(sphereBody);
-  
-  var groundBody = new CANNON.Body({
-    mass: 0
-  });
-  var groundShape = new CANNON.Plane();
-  groundBody.addShape(groundShape);
-  world.add(groundBody);
   
   var gui = new dat.GUI();
   
@@ -81,96 +64,37 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   
   var synthf = gui.addFolder('Synth');
   
-  var scene = g.scene
   
-  var renderer = g.renderer;
-  var camera = g.camera;
-  
-  var monster;
-  var loader = new THREE.glTFLoader;
-  console.log(loader);
-  loader.load('/res/models/monster.json', function(data){
-    console.log(data);
-    var scale = 0.001;
-    monster = data.scene;
-    monster.scale.set(scale, scale, scale);
-    //monster.rotation.x = -0.5*Math.PI;
-    console.log(monster);
-    monster.children[0].children[0].material.shading = THREE.SmoothShading;
-    scene.add(monster);
-    for(var i=0; i< data.animations.length; i++)
-    {
-      var anim = data.animations[i];
-      anim.loop = true;
-      anim.duration = 3;
-      anim.play();
-    }
-  });
+  var g = new Game(canvas[0]);
   
   var t = window.performance.now();
   var time = window.performance.now();
-  var paused = true;
-  
-  var pads = navigator.getGamepads();
-  
-  var light = new THREE.AmbientLight(new THREE.Color(0xffffff));
-  scene.add(light);
-  
-  var plight = new THREE.PointLight(new THREE.Color(0xffffff), 1, 1000);
-  plight.position.set( 25, 50, 50 );
-  scene.add(plight);
-  
-  var listenObj = new THREE.Mesh(
-    new THREE.SphereGeometry(1,20,10),
-    new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x0066ff),
-      ambient: new THREE.Color(0x050505),
-      emissive: new THREE.Color(0x000000),
-      specular: new THREE.Color(0x999999),
-      shininess: 30,
-      shading: THREE.FlatShading,
-      vertexColors: THREE.FaceColors
-    })
-  );
-  scene.add(listenObj);
-  
-  var ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(10000, 10000),
-    new THREE.MeshPhongMaterial({
-      color: new THREE.Color(0x66ff66),
-      ambient: new THREE.Color(0x010101),
-      emissive: new THREE.Color(0x000000),
-      specular: new THREE.Color(0x009900),
-      shininess: 30,
-      shading: THREE.FlatShading,
-      vertexColors: THREE.FaceColors
-    })
-  );
-  scene.add(ground)
+  var paused = false;
   
   var midi;
   var listener = g.listener;
   var context = listener.context;
   
-  
-  
-  var audio = new THREE.Audio(listener);
-  //audio.load('/res/audio/ele.wav');
-  audio.setLoop(-1);
-  listenObj.add(audio);
-  
-  
+  /*
   scenef.add(audio.gain.gain, 'value').min(0.0).max(1).step(0.001).name('Volume');
+  */
   scenef.add(listener.context.listener, 'dopplerFactor').min(0.0).max(2).name('Doppler Effect');
   scenef.add(listener.context.listener, 'speedOfSound').min(0.0).max(686).name('Speed of Sound');
   
-  
+  /*
   var inst = new PolySynth(context, {
     voices: 16
   });
   inst.connect(audio.panner);
   var seq = new SimpleSeq(furElise);
   seq.bpm = 400;
+  
+  var seq2 = new SequencerNew({
+    '0': [new Note('c3', 1), new Note('e3', 1)],
+    '1': [new Note('g2', 1), new Note('a3', 1)],
+    '2': [new Note('e4', 1), new Note('e3', 0)],
+    '3': [new Note('e4', 0), new Note('a3', 0), new Note('c3',0), new Note('g2', 0), 'restart'],
+  });
   
   var gap = 1/8;
   var shep1 = new SimpleSeq([
@@ -222,9 +146,11 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   shepsynth3.connect(audio.panner);
   shepsynth4.connect(audio.panner);
   
+  var midiVal=69;
   var onMidi = function(e)
   {
     inst.update(e.data);
+    midiVal = e.data[1]
   };
   var onMidiConnect = function(e)
   {
@@ -255,77 +181,32 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
     function(e){
       console.error('midi fail', e);
     });
-  }
+  }*/
   var width, height;
   var resize = function(e)
   {
     var w = e.target.innerWidth;
     var h = e.target.innerHeight;
     var r = w/h;
-    renderer.setSize(w,h);
-    camera.aspect = r;
-    camera.updateProjectionMatrix();
+    g.renderer.setSize(w,h);
+    g.camera.aspect = r;
+    g.camera.updateProjectionMatrix();
     width = w;
     height = h;
   };
   $(window).resize(function(e){resize.call(g,e)});
   
   $(window).resize();
-  synthf.add(seq, 'bpm').min(60).max(1000).name('BPM');
+  //synthf.add(seq2, 'speed').min(0.1).max(2).name('BPM');
   
-  var visibilityHandler = function(e)
-  {/*
-    paused = document.hidden;
-    audio.gain.gain.value = !document.hidden
-  */};
-  
-  document.addEventListener('visibilitychange', visibilityHandler, false);
   
   var ticker = 0;
   var loop = function(t, frame)
   {
-    g.loop(t, frame);
-    pads = navigator.getGamepads();
-    THREE.glTFAnimator.update();
-    var pad = pads[0];
-    listenObj.position.copy(sphereBody.position);
-    listenObj.quaternion.copy(sphereBody.quaternion);
-    
-    if(pad !== undefined)
+    var notes = seq2.update(frame);
+    for(var n in notes)
     {
-      var x = pad.axes[0];
-      var y = pad.axes[1];
-      var x2 = pad.axes[2];
-      var y2 = pad.axes[3];
-      var movSpeed = new THREE.Vector2(0.1,0.1);
-      var rotScale = new THREE.Vector2(-0.01, -0.01);
-      var run = 1;
-      
-      if(pad.buttons[2].pressed)
-      {
-        run = 100;
-      }
-      
-      camera.translateX(x*movSpeed.x*run);
-      camera.translateZ(y*movSpeed.y*run);
-      camera.rotateOnAxis(new THREE.Vector3(1,0,0),y2*rotScale.y);
-      camera.rotateOnAxis(new THREE.Vector3(0,1,0),x2*rotScale.x);
-      //camera.lookAt(listenObj.position);
-      var force = new CANNON.Vec3(run*y, run*x, 0);
-      //sphereBody.applyImpulse(force, sphereBody.position);
-      
-      /*listenObj.position.x = Math.cos(t*0.005)*(5);
-      listenObj.position.z = Math.sin(t*0.005)*(5);*/
-      if(pad.buttons[5].pressed)
-      {
-        camera.position.set(0,0,0);
-        camera.rotation.set(0,0,0);
-      }
-      if(pad.buttons[3].pressed)
-      {
-        audio.gain.gain.value = !audio.gain.gain.value;
-      }
-      
+      msynth.noteOn(notes[n].getMidi()+(69-midiVal), notes[n].mag*10);
     }
     var tick = Math.floor((t*0.000016)*seq.bpm%2);
     if(ticker !== tick)
@@ -337,7 +218,7 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
       var note3 = shep3.current();
       var note4 = shep4.current();
       //msynth.update([0x80, note.getMidi(), 0]);
-      console.log(note1.mag+note2.mag+note3.mag+note4.mag, note1.getNote(), note2.getNote(), note3.getNote(), note4.getNote());
+      //console.log(note1.mag+note2.mag+note3.mag+note4.mag, note1.getNote(), note2.getNote(), note3.getNote(), note4.getNote());
       shepsynth1.noteOff(note1.getMidi(), 0);
       shepsynth2.noteOff(note2.getMidi(), 0);
       shepsynth3.noteOff(note3.getMidi(), 0);
@@ -348,10 +229,12 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
       note3 = shep3.next();
       note4 = shep4.next();
       //msynth.update([0x90, note.getMidi(), note.mag*10]);
+      /*
       shepsynth1.noteOn(note1.getMidi(), note1.mag*10);
       shepsynth2.noteOn(note2.getMidi(), note2.mag*10);
       shepsynth3.noteOn(note3.getMidi(), note3.mag*10);
       shepsynth4.noteOn(note4.getMidi(), note4.mag*10);
+      */
     }
   };
   var main = function()
@@ -362,7 +245,7 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
     loopStat.begin();
     if(!paused && !document.hidden)
     {
-      loop(t,frame);
+      g.loop(t,frame);
       t += frame;
     }
     loopStat.end();
@@ -370,11 +253,11 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   var draw = function()
   {
     renderStat.begin();
-    renderer.render(scene, camera);
+    g.draw();
     renderStat.end();
     window.requestAnimationFrame(draw);
   };
-  g.draw();
+  draw();
   setInterval(main, 0);
 });
 

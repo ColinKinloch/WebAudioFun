@@ -45,8 +45,6 @@ function(THREE ,  CANNON){
   Game.prototype.draw = function()
   {
     this.renderer.render(this.scene, this.camera);
-    var that = this;
-    window.requestAnimationFrame(function(){that.draw.call(that)});
   };
   return Game;
 });
