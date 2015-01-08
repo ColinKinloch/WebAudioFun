@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['Game', 'THREE', 'CANNON', 'Button', 'CamTracker', 'PolySynth', 'glTF/threejs/glTFLoader'],
-function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  PolySynth){
+define(['Game', 'THREE', 'CANNON', 'Button', 'CamTracker', 'Note', 'GoodSeq', 'PolySynth', 'furEliseGood', 'glTF/threejs/glTFLoader'],
+function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  PolySynth ,  furElise){
   
   var pads;
   
@@ -15,6 +15,9 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  PolySynth){
   var camtrack;
   
   var inst;
+  var msynth;
+  
+  var seq;
   
   var midi;
   
@@ -96,6 +99,11 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  PolySynth){
     //audio.load('/res/audio/ele.wav');
     audio.setLoop(-1);
     sphereObj.add(audio);
+    
+    msynth = new PolySynth(this.listener.context);
+    msynth.connect(audio.panner);
+    seq = new GoodSeq(furElise);
+    seq.speed = 0.4;
     
     inst = new PolySynth(this.listener.context, {
       voices: 16
@@ -205,6 +213,11 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  PolySynth){
         sphereBody.angularVelocity.set(0,0,0);
         sphereBody.quaternion.set(0,0,0,1);
       }
+    }
+    var notes = seq.update(d);
+    for(var n in notes)
+    {
+      msynth.noteOn(notes[n].getMidi(), notes[n].mag*10);
     }
   };
   ThisGame.prototype.draw = function()

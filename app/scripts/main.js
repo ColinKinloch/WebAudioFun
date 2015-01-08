@@ -44,8 +44,8 @@ require.config({
     }
   }
 });
-require([ 'jquery', 'stats', 'dat-GUI', 'ThisGame', 'THREE', 'CANNON', 'Note', 'PolySynth', 'MonoSynth', 'GoodSeq', 'SimpleSeq', 'CamTracker', 'furElise', 'furEliseGood', 'glTF/threejs/glTFLoader'],
-function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  PolySynth ,  MonoSynth ,  SequencerNew , SimpleSeq ,  CamTracker ,  furElise ,  furEliseGood)
+require([ 'jquery', 'stats', 'dat-GUI', 'ThisGame', 'Note', 'PolySynth', 'MonoSynth', 'SimpleSeq', 'furElise', 'glTF/threejs/glTFLoader'],
+function(  $      ,  Stats ,  dat     ,  Game ,  Note ,  PolySynth ,  MonoSynth ,  SimpleSeq ,  furElise)
 {
   var canvas = $('#main');
   
@@ -82,19 +82,8 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   scenef.add(listener.context.listener, 'speedOfSound').min(0.0).max(686).name('Speed of Sound');
   
   /*
-  var inst = new PolySynth(context, {
-    voices: 16
-  });
-  inst.connect(audio.panner);
   var seq = new SimpleSeq(furElise);
   seq.bpm = 400;
-  
-  var seq2 = new SequencerNew({
-    '0': [new Note('c3', 1), new Note('e3', 1)],
-    '1': [new Note('g2', 1), new Note('a3', 1)],
-    '2': [new Note('e4', 1), new Note('e3', 0)],
-    '3': [new Note('e4', 0), new Note('a3', 0), new Note('c3',0), new Note('g2', 0), 'restart'],
-  });
   
   var gap = 1/8;
   var shep1 = new SimpleSeq([
@@ -134,8 +123,6 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   var shep4 = Object.create(shep1);
   shep4.i = 21;
   
-  var msynth = new PolySynth(context);
-  msynth.connect(audio.panner);
   var ShepSynth = MonoSynth;
   var shepsynth1 = new ShepSynth(context);
   var shepsynth2 = new ShepSynth(context);
@@ -146,41 +133,6 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   shepsynth3.connect(audio.panner);
   shepsynth4.connect(audio.panner);
   
-  var midiVal=69;
-  var onMidi = function(e)
-  {
-    inst.update(e.data);
-    midiVal = e.data[1]
-  };
-  var onMidiConnect = function(e)
-  {
-    console.log('conn',e);
-  };
-  var onMidiDisconnect = function(e)
-  {
-    console.log('dis',e);
-  };
-  if(navigator.requestMIDIAccess)
-  {
-    navigator.requestMIDIAccess().then(function(r){
-      midi = r;
-      paused = false;
-      midi.onconnect = onMidiConnect;
-      midi.ondisconnect = onMidiDisconnect;
-      if (midi.inputs.length === 0)
-      {
-        console.error('no devices');
-      }
-      var inputs = midi.inputs.values();
-      for(var input = inputs.next(); input && !input.done; input = inputs.next())
-      {
-        console.log(input.value.name);
-        input.value.onmidimessage = onMidi;
-      }
-    },
-    function(e){
-      console.error('midi fail', e);
-    });
   }*/
   var width, height;
   var resize = function(e)
@@ -203,11 +155,6 @@ function(  $      ,  Stats ,  dat     ,  Game ,  THREE ,  CANNON ,  Note ,  Poly
   var ticker = 0;
   var loop = function(t, frame)
   {
-    var notes = seq2.update(frame);
-    for(var n in notes)
-    {
-      msynth.noteOn(notes[n].getMidi()+(69-midiVal), notes[n].mag*10);
-    }
     var tick = Math.floor((t*0.000016)*seq.bpm%2);
     if(ticker !== tick)
     {
