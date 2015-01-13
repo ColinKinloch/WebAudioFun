@@ -1,55 +1,48 @@
 /*global define*/
 'use strict';
-define(['Game', 'THREE', 'CANNON', 'Button', 'CamTracker', 'Note', 'GoodSeq', 'PolySynth', 'furEliseGood', 'glTF/threejs/glTFLoader'],
-function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  PolySynth ,  furElise){
+define(['game/Game', 'THREE', 'CANNON', 'game/Pad', 'game/Button', 'CamTracker', 'music/Note', 'music/GoodSeq', 'music/ShepardSeq', 'music/MonoSynth', 'music/PolySynth', 'furEliseGood', 'glTF/threejs/glTFLoader'],
+function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  ShepardSeq ,  MonoSynth, PolySynth ,  furElise){
   
-  var pads;
-  
-  var loader = new THREE.glTFLoader;
-  loader.useBufferGeometry = false;
-  
-  var sphereBody, sphereShape, sphereObj;
-  var audio;
-  var groundBody, groundShape, groundMesh;
-  var lightAmb, lightPoint;
-  var camtrack;
-  
-  var inst;
-  var msynth;
-  
-  var seq;
-  
-  var midi;
-  
-  var but;
   
   var ThisGame = function(canvas)
   {
-    var that = this;
+    
+    let that = this;
+    
+    this.pads = navigator.getGamepads();
+    
+    this.loader = new THREE.glTFLoader();
+    this.loader.useBufferGeometry = false;
+    
+    this.shepn = 4;
+    this.shep = [];
+    this.shepsynth = [];
     
     Game.prototype.constructor.call(this, canvas);
     
+    var context = this.listener.context;
+    
     this.renderer.shadowMapEnabled = true;
     
-    sphereBody = new CANNON.Body({
+    this.sphereBody = new CANNON.Body({
       mass: 5,
       linearDamping: 0.9
     });
-    sphereShape = new CANNON.Sphere(1);
-    sphereBody.addShape(sphereShape);
-    sphereBody.position.set(0,0,10);
-    //sphereBody.angularVelocity.set(0,10,0);
-    this.world.add(sphereBody);
+     this.sphereShape = new CANNON.Sphere(1);
+    this.sphereBody.addShape(this.sphereShape);
+    this.sphereBody.position.set(0,0,10);
+    //this.sphereBody.angularVelocity.set(0,10,0);
+    this.world.add(this.sphereBody);
     
-    sphereObj = new THREE.Object3D();
-    this.scene.add(sphereObj);
+    this.sphereObj = new THREE.Object3D();
+    this.scene.add(this.sphereObj);
     var ball;
-    loader.load('/res/models/Ball2.gltf', function(data){
-      var scale = 0.001;
+    this.loader.load('/res/models/Ball2.gltf', function(data){
       ball = data.scene;
       //ball.scale.set(scale, scale, scale);
       //monster.rotation.x = -0.5*Math.PI;
       //that.scene.add(ball);
+      console.log(ball);
       for(var i=0; i< data.animations.length; i++)
       {
         var anim = data.animations[i];
@@ -57,22 +50,22 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  P
         anim.duration = 3;
         anim.play();
       }
-      sphereObj.add(ball);
+      that.sphereObj.add(ball);
     
-      sphereObj.castShadow = true;
-      sphereObj.receiveShadow = true;
-      groundMesh.castShadow = true;
-      groundMesh.receiveShadow = true;
+      that.sphereObj.castShadow = true;
+      that.sphereObj.receiveShadow = true;
+       that.groundMesh.castShadow = true;
+       that.groundMesh.receiveShadow = true;
     });
     
-    groundBody = new CANNON.Body({
+     this.groundBody = new CANNON.Body({
       mass: 0
     });
-    groundShape = new CANNON.Plane();
-    groundBody.addShape(groundShape);
-    this.world.add(groundBody);
+     this.groundShape = new CANNON.Plane();
+     this.groundBody.addShape(this.groundShape);
+    this.world.add(this.groundBody);
     
-    groundMesh = new THREE.Mesh(
+     this.groundMesh = new THREE.Mesh(
       new THREE.PlaneGeometry(10000, 10000),
       new THREE.MeshPhongMaterial({
         color: new THREE.Color(0x66ff66),
@@ -84,35 +77,78 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  P
         vertexColors: THREE.FaceColors
       })
     );
-    this.scene.add(groundMesh);
+    this.scene.add(this.groundMesh);
     
-    lightAmb = new THREE.AmbientLight(new THREE.Color(0xffffff));
-    this.scene.add(lightAmb);
+     this.lightAmb = new THREE.AmbientLight(new THREE.Color(0xffffff));
+    this.scene.add(this.lightAmb);
     
-    lightPoint = new THREE.PointLight(new THREE.Color(0xffffff), 1, 1000);
-    lightPoint.position.set( 25, 50, 50 );
-    this.scene.add(lightPoint);
+     this.lightPoint = new THREE.PointLight(new THREE.Color(0xffffff), 1, 1000);
+     this.lightPoint.position.set( 25, 50, 50 );
+    this.scene.add(this.lightPoint);
     
-    camtrack = new CamTracker(this.camera, sphereObj, 3, 0.01);
+     this.camtrack = new CamTracker(this.camera, this.sphereObj, 3, 0.01);
     
-    audio = new THREE.Audio(this.listener);
-    //audio.load('/res/audio/ele.wav');
-    audio.setLoop(-1);
-    sphereObj.add(audio);
+     this.audio = new THREE.Audio(this.listener);
+    ///this.audio.load('/res/audio/ele.ogg');
+     this.audio.setLoop(-1);
+    this.sphereObj.add(this.audio);
     
-    msynth = new PolySynth(this.listener.context);
-    msynth.connect(audio.panner);
-    seq = new GoodSeq(furElise);
-    seq.speed = 0.4;
+     this.msynth = new PolySynth(context);
+     this.msynth.connect(this.audio.panner);
+     this.seq = new GoodSeq(furElise);
+     this.seq.speed = 0.4;
     
-    inst = new PolySynth(this.listener.context, {
+    this.shepseq = new ShepardSeq(2, 4);
+    var gap = 1/(2*this.shepn);
+    var ShepSynth = PolySynth;
+    for(var i=0; i<this.shepn;++i)
+    {
+      this.shep[i] = new GoodSeq([
+        [new Note('c2', gap*0), new Note('b5', 0)],
+        [new Note('d2', gap*1), new Note('c2', 0)],
+        [new Note('e2', gap*2), new Note('d2', 0)],
+        [new Note('f#2', gap*3), new Note('e2', 0)],
+        [new Note('g#2', gap*4), new Note('f#2', 0)],
+        [new Note('a#2', gap*5), new Note('g#2', 0)],
+        [new Note('b2', gap*6), new Note('a#2', 0)],
+        [new Note('c3', gap*7), new Note('b2', 0)],
+        [new Note('d3', 1), new Note('c3', 0)],
+        [new Note('e3', 1), new Note('d3', 0)],
+        [new Note('f#3', 1), new Note('e3', 0)],
+        [new Note('g#3', 1), new Note('f#3', 0)],
+        [new Note('a#3', 1), new Note('g#3', 0)],
+        [new Note('b3', 1), new Note('a#3', 0)],
+        [new Note('c4', 1), new Note('b3', 0)],
+        [new Note('d4', 1), new Note('c4', 0)],
+        [new Note('e4', 1), new Note('d4', 0)],
+        [new Note('f#4', 1), new Note('e4', 0)],
+        [new Note('g#4', 1), new Note('f#4', 0)],
+        [new Note('a#4', 1), new Note('g#4', 0)],
+        [new Note('b4', gap*7), new Note('a#4', 0)],
+        [new Note('c5', gap*6), new Note('b4', 0)],
+        [new Note('d5', gap*5), new Note('c5', 0)],
+        [new Note('e5', gap*4), new Note('d5', 0)],
+        [new Note('f#5', gap*3), new Note('e5', 0)],
+        [new Note('g#5', gap*2), new Note('f#5', 0)],
+        [new Note('a#5', gap*1), new Note('g#5', 0)],
+        [new Note('b5', gap*0), new Note('a#5', 0), 'restart']
+      ]);
+      this.shep[i].t = 7*i;
+      this.shep[i].speed = 0.2;
+      
+      this.shepsynth[i] = new ShepSynth(context);
+      this.shepsynth[i].connect(this.audio.panner);
+    }
+    
+    
+     this.inst = new PolySynth(context, {
       voices: 16
     });
-    inst.connect(audio.panner);
+     this.inst.connect(this.audio.panner);
     
     var onMidi = function(e)
     {
-      inst.update(e.data);
+       that.inst.update(e.data);
     };
     var onMidiConnect = function(e)
     {
@@ -125,15 +161,15 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  P
     if(navigator.requestMIDIAccess)
     {
       navigator.requestMIDIAccess().then(function(r){
-        midi = r;
+        that.midi = r;
         //paused = false;
-        midi.onconnect = onMidiConnect;
-        midi.ondisconnect = onMidiDisconnect;
-        if (midi.inputs.length === 0)
+        that.midi.onconnect = onMidiConnect;
+        that.midi.ondisconnect = onMidiDisconnect;
+        if (that.midi.inputs.length === 0)
         {
           console.error('no devices');
         }
-        var inputs = midi.inputs.values();
+        var inputs = that.midi.inputs.values();
         for(var input = inputs.next(); input && !input.done; input = inputs.next())
         {
           console.log(input.value.name);
@@ -152,29 +188,30 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  P
   ThisGame.prototype.loop = function(t, d)
   {
     
-    pads = navigator.getGamepads();
+    this.pads = navigator.getGamepads();
+    
     
     Game.prototype.loop.call(this, t, d);
     
-    var pad = pads[0];
-    
+    var pad = this.pads[0];
+    var gp;
     if(pad !== undefined)
     {
-      var a1 = new THREE.Vector2().set(pad.axes[0], pad.axes[1]);
-      var a2 = new THREE.Vector2().set(pad.axes[2], pad.axes[3]);
-      
-      if(!but)
+      if(!gp)
       {
-        but = new Button(pad.buttons[0]);
+        gp = new Pad(pad);
       }
-      but.update();
-      but.poll();
+      var a1 = gp.ls;
+      var a2 = gp.rs;
+      
+      gp.update();
+      gp.poll();
       
       var camSp = new THREE.Vector2(0.1,0.1);
-      var rotScale = new THREE.Vector2(-0.01, -0.01);
+      //var rotScale = new THREE.Vector2(-0.01, -0.01);
       var run = 1;
       
-      if(pad.buttons[2].pressed)
+      if(gp.b.pressed())
       {
         run = 10;
       }
@@ -182,7 +219,7 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  P
       this.camera.translateX(camSp.x*a2.x);
       this.camera.translateY(camSp.y*a2.y);
       
-      var angleV = new THREE.Vector2().copy(sphereObj.position);
+      var angleV = new THREE.Vector2().copy(this.sphereObj.position);
       angleV.sub(new THREE.Vector2().copy(this.camera.position));
       var angle = THREE.Vector3.prototype.angleTo.call(angleV,new THREE.Vector2(1,0,0));
       if(angleV.y<0)
@@ -191,43 +228,52 @@ function(Game ,  THREE ,  CANNON ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  P
       }
       var move = new THREE.Vector3().copy(a1).setZ(0).applyAxisAngle(new THREE.Vector3(0,0,1), angle);
       var force = new CANNON.Vec3(run*move.y, run*move.x, 0);
-      sphereBody.applyImpulse(force, sphereBody.position);
-      sphereBody.angularVelocity.x += a1.x;
-      sphereBody.angularVelocity.y += a1.y;
+      this.sphereBody.applyImpulse(force, this.sphereBody.position);
+      this.sphereBody.angularVelocity.x += a1.x;
+      this.sphereBody.angularVelocity.y += a1.y;
       
       
-      if(but.justPressed())
+      if(gp.y.justPressed())
       {
-        sphereBody.velocity.set(0,0,10);
+        this.sphereBody.velocity.set(0,0,10);
       }
       
-      if(pad.buttons[3].pressed)
+      if(gp.x.pressed())
       {
-        audio.gain.gain.value = !audio.gain.gain.value;
+         this.audio.gain.gain.value = !!this.audio.gain.gain.value;
       }
       
-      if(pad.buttons[9].pressed)
+      if(gp.start.pressed())
       {
-        sphereBody.position.set(0,0,2);
-        sphereBody.velocity.set(0,0,0);
-        sphereBody.angularVelocity.set(0,0,0);
-        sphereBody.quaternion.set(0,0,0,1);
+        this.sphereBody.position.set(0,0,2);
+        this.sphereBody.velocity.set(0,0,0);
+        this.sphereBody.angularVelocity.set(0,0,0);
+        this.sphereBody.quaternion.set(0,0,0,1);
       }
     }
-    var notes = seq.update(d);
-    for(var n in notes)
+    var notes = this.seq.update(d);
+    for(let n in notes)
     {
-      msynth.noteOn(notes[n].getMidi(), notes[n].mag*10);
+      this.msynth.noteOn(notes[n].getMidi(), notes[n].mag*10);
+    }
+    var snotes = [];
+    for(let i=0; i<this.shepn; ++i)
+    {
+      snotes[i] = this.shep[i].update(d);
+      for(let n in snotes[i])
+      {
+        //this.shepsynth[i].noteOn(snotes[i][n].getMidi(), snotes[i][n].mag*10);
+      }
     }
   };
   ThisGame.prototype.draw = function()
   {
-    sphereObj.position.copy(sphereBody.position);
-    sphereObj.quaternion.copy(sphereBody.quaternion);
+    this.sphereObj.position.copy(this.sphereBody.position);
+    this.sphereObj.quaternion.copy(this.sphereBody.quaternion);
     
     THREE.glTFAnimator.update();
     
-    camtrack.update();
+     this.camtrack.update();
     
     Game.prototype.draw.call(this);
   };

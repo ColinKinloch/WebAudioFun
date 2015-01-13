@@ -1,6 +1,6 @@
 /*global define*/
 'use strict';
-define(['Note'],
+define(['./Note'],
 function(Note){
   var Voice = function(context, key, mag)
   {

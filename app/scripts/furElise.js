@@ -1,6 +1,6 @@
 /*global define*/
 'use strict';
-define(['Note'],
+define(['music/Note'],
 function(Note){
   var furElise = [
     new Note('e4', 1),

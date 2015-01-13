@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
 //Attack, Decay, Sustain, Release enveloped voice
-define(['Voice'],
+define(['./Voice'],
 function(Voice){
   var AdsrProp = function(time, mag)
   {

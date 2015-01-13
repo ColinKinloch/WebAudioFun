@@ -1,6 +1,6 @@
 /*global define*/
 'use strict';
-define(['Sequencer'],
+define(['./Sequencer'],
 function(Sequencer){
   var oldt = 0;
   var ProgSeq = function(notes)
@@ -10,7 +10,10 @@ function(Sequencer){
     this.notes = notes || {};
   };
   
-  ProgSeq.prototype.update(dt)
+  ProgSeq.prototype = Object.create(Sequencer.prototype);
+  ProgSeq.prototype.constructor = Sequencer;
+  
+  ProgSeq.prototype.update = function(dt)
   {
     dt /= 1000*this.speed;
     this.t += dt;

@@ -1,6 +1,6 @@
 /*global define*/
 'use strict';
-define(['GMInstrument'],
+define(['./GMInstrument'],
 function(GMInstrument){
   var Synth = function(context)
   {

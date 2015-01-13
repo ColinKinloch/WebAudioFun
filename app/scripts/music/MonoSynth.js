@@ -1,6 +1,6 @@
 /*global define*/
 'use strict';
-define(['Synth', 'Voice', 'Note'],
+define(['./Synth', './Voice', './Note'],
 function(Synth,   Voice ,  Note){
   var MonoSynth = function(context)
   {

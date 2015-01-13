@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
 //General Midi instrument
-define(['Instrument', 'Note'],
+define(['./Instrument', './Note'],
 function(Instrument ,  Note){
   var GMInstrument = function(context)
   {
@@ -28,8 +28,6 @@ function(Instrument ,  Note){
     switch(m.type)
     {
       case 0x90://down
-        var note = new Note(m);
-        //console.log(note.getNote(), note.mag);
         if(m.mag !== 0)
         {
           this.noteOn(m.key, m.mag);

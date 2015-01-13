@@ -2,10 +2,10 @@
 'use strict';
 define([],
 function(){
-  var current = 2;
-  var last = 2;
   var Button = function(button)
   {
+    this.current = 2;
+    this.last = 2;
     this.button = button || null;
   };
   
@@ -16,33 +16,38 @@ function(){
       var p = parseInt(Number(this.button.pressed));
       if(this.pressed()!==Boolean(p%2))
       {
-        current = p;
+        this.current = p;
       }
     }
   };
   Button.prototype.update = function()
   {
-    if((last == 0)&&(current == 0))
-      current = 2;
-    else if((last = 1)&&(current == 1))
-      current = 3;
-    last = current;
+    if((this.last === 0)&&(this.current === 0))
+    {
+      this.current = 2;
+    }
+    else if((this.last === 1)&&(this.current === 1))
+    {
+      this.current = 3;
+    }
+    this.last = this.current;
   };
   Button.prototype.pressed = function()
   {
-    return Boolean(current%2);
+    return Boolean(this.current%2);
   };
   Button.prototype.justPressed = function()
   {
-    return Boolean(current === 1);
+    return Boolean(this.current === 1);
   };
   Button.prototype.justReleased = function()
   {
-    return Boolean(current === 0);
+    return Boolean(this.current === 0);
   };
   Button.prototype.set = function(status)
   {
-    current = parseInt(Number(status));
+    this.current = parseInt(Number(status));
   };
   return Button;
 });
+

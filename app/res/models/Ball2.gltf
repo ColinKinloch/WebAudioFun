@@ -33,13 +33,13 @@
             "componentType": 5126,
             "count": 1296,
             "max": [
-                0.980162,
-                0.995282,
-                0.98951
+                0.981964,
+                0.96704,
+                1
             ],
             "min": [
-                -0.980162,
-                -0.995283,
+                -0.981964,
+                -0.96704,
                 -1
             ],
             "type": "VEC3"
@@ -51,19 +51,19 @@
             "componentType": 5126,
             "count": 1296,
             "max": [
-                0.518379,
-                0.997679
+                0.996379,
+                0.993839
             ],
             "min": [
-                0.00232095,
-                0.00232089
+                0.0131702,
+                0.00720829
             ],
             "type": "VEC2"
         }
     },
     "animations": {},
     "asset": {
-        "generator": "collada2gltf@66c294c04a629b0207eb4168bbbd054c6f97fad5",
+        "generator": "collada2gltf@dd6dd34ee1a3e2fc767d725df924353ca0dc08c2",
         "premultipliedAlpha": true,
         "profile": "WebGL 1.0.2",
         "version": 0.8
@@ -90,21 +90,21 @@
         }
     },
     "images": {
-        "Material_001_Diffuse_Color": {
-            "uri": "Material.001%20Diffuse%20Color.png"
+        "BaseDiffuse": {
+            "uri": "BaseDiffuse.png"
         },
-        "Material_001_Diffuse_Color_001": {
-            "uri": "Material.001%20Diffuse%20Color.001.png"
+        "MiddleBumps": {
+            "uri": "MiddleBumps.png"
         },
-        "Material_001_Normal": {
-            "uri": "Material.001%20Normal.png"
+        "MiddleDetail": {
+            "uri": "MiddleDetail.png"
         },
-        "Material_001_Specular_Intensity": {
-            "uri": "Material.001%20Specular%20Intensity.png"
+        "MiddleSpecular": {
+            "uri": "MiddleSpecular.png"
         }
     },
     "lights": {
-        "Point-light": {
+        "Core-light": {
             "point": {
                 "color": [
                     3,
@@ -116,6 +116,36 @@
                 "quadraticAttenuation": 0.00159997
             },
             "type": "point"
+        },
+        "Sun-light": {
+            "directional": {
+                "color": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "type": "directional"
+        },
+        "Sun_001-light": {
+            "directional": {
+                "color": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "type": "directional"
+        },
+        "Sun_002-light": {
+            "directional": {
+                "color": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "type": "directional"
         }
     },
     "materials": {
@@ -129,8 +159,8 @@
                         0,
                         1
                     ],
-                    "bump": "texture_Material_001_Normal",
-                    "diffuse": "texture_Material_001_Diffuse_Color_001",
+                    "bump": "texture_MiddleBumps",
+                    "diffuse": "texture_MiddleSpecular",
                     "emission": [
                         0,
                         0,
@@ -138,15 +168,20 @@
                         1
                     ],
                     "shininess": 50,
-                    "specular": "texture_Material_001_Specular_Intensity"
+                    "specular": [
+                        0.5,
+                        0.5,
+                        0.5,
+                        1
+                    ]
                 }
             },
             "name": "Material_001"
         }
     },
     "meshes": {
-        "Sphere-mesh": {
-            "name": "Sphere",
+        "Hemisphere-mesh": {
+            "name": "Hemisphere",
             "primitives": [
                 {
                     "attributes": {
@@ -162,9 +197,9 @@
         }
     },
     "nodes": {
-        "Point": {
+        "Core": {
             "children": [],
-            "light": "Point-light",
+            "light": "Core-light",
             "matrix": [
                 1,
                 0,
@@ -183,34 +218,9 @@
                 0,
                 1
             ],
-            "name": "Point"
+            "name": "Core"
         },
-        "Sphere": {
-            "children": [],
-            "matrix": [
-                -4.37114e-08,
-                0,
-                -1,
-                0,
-                0,
-                1,
-                0,
-                0,
-                1,
-                0,
-                -4.37114e-08,
-                0,
-                0,
-                0,
-                0,
-                1
-            ],
-            "meshes": [
-                "Sphere-mesh"
-            ],
-            "name": "Sphere"
-        },
-        "Sphere_001": {
+        "HemisphereLeft": {
             "children": [],
             "matrix": [
                 -4.37114e-08,
@@ -231,15 +241,112 @@
                 1
             ],
             "meshes": [
-                "Sphere-mesh"
+                "Hemisphere-mesh"
             ],
-            "name": "Sphere_001"
+            "name": "HemisphereLeft"
         },
-        "node_3": {
+        "HemisphereRight": {
+            "children": [],
+            "matrix": [
+                -4.37114e-08,
+                0,
+                -1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                -4.37114e-08,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "meshes": [
+                "Hemisphere-mesh"
+            ],
+            "name": "HemisphereRight"
+        },
+        "Sun": {
+            "children": [],
+            "light": "Sun-light",
+            "matrix": [
+                -0.327336,
+                0.426571,
+                -0.843142,
+                0,
+                0.918849,
+                0.351808,
+                -0.178738,
+                0,
+                0.22038,
+                -0.833228,
+                -0.507114,
+                0,
+                3.37165,
+                -5.78493,
+                0.667447,
+                1
+            ],
+            "name": "Sun"
+        },
+        "Sun_001": {
+            "children": [],
+            "light": "Sun_001-light",
+            "matrix": [
+                0.412423,
+                0.621483,
+                -0.666082,
+                0,
+                -0.833224,
+                0.552936,
+                0,
+                0,
+                0.368301,
+                0.554995,
+                0.745879,
+                0,
+                4.84758,
+                0.677863,
+                0.667447,
+                1
+            ],
+            "name": "Sun_001"
+        },
+        "Sun_002": {
+            "children": [],
+            "light": "Sun_002-light",
+            "matrix": [
+                0.228491,
+                0.486728,
+                -0.843142,
+                0,
+                0.734638,
+                -0.654492,
+                -0.178738,
+                0,
+                -0.638826,
+                -0.578564,
+                -0.507114,
+                0,
+                3.37165,
+                -5.78493,
+                0.667447,
+                1
+            ],
+            "name": "Sun_002"
+        },
+        "node_6": {
             "children": [
-                "Sphere",
-                "Point",
-                "Sphere_001"
+                "HemisphereRight",
+                "Core",
+                "HemisphereLeft",
+                "Sun",
+                "Sun_001",
+                "Sun_002"
             ],
             "matrix": [
                 1,
@@ -285,7 +392,7 @@
     "scenes": {
         "defaultScene": {
             "nodes": [
-                "node_3"
+                "node_6"
             ]
         }
     },
@@ -337,7 +444,46 @@
                 },
                 "light0Transform": {
                     "semantic": "MODELVIEW",
-                    "source": "Point",
+                    "source": "Core",
+                    "type": 35676
+                },
+                "light1Color": {
+                    "type": 35665,
+                    "value": [
+                        1,
+                        1,
+                        1
+                    ]
+                },
+                "light1Transform": {
+                    "semantic": "MODELVIEW",
+                    "source": "Sun",
+                    "type": 35676
+                },
+                "light2Color": {
+                    "type": 35665,
+                    "value": [
+                        1,
+                        1,
+                        1
+                    ]
+                },
+                "light2Transform": {
+                    "semantic": "MODELVIEW",
+                    "source": "Sun_001",
+                    "type": 35676
+                },
+                "light3Color": {
+                    "type": 35665,
+                    "value": [
+                        1,
+                        1,
+                        1
+                    ]
+                },
+                "light3Transform": {
+                    "semantic": "MODELVIEW",
+                    "source": "Sun_002",
                     "type": 35676
                 },
                 "modelViewMatrix": {
@@ -364,7 +510,7 @@
                     "type": 5126
                 },
                 "specular": {
-                    "type": 35678
+                    "type": 35666
                 },
                 "texcoord0": {
                     "semantic": "TEXCOORD_0",
@@ -390,6 +536,12 @@
                                 "light0LinearAttenuation",
                                 "light0QuadraticAttenuation",
                                 "light0Transform",
+                                "light1Color",
+                                "light1Transform",
+                                "light2Color",
+                                "light2Transform",
+                                "light3Color",
+                                "light3Transform",
                                 "modelViewMatrix",
                                 "normalMatrix",
                                 "projectionMatrix",
@@ -398,8 +550,7 @@
                             ],
                             "texcoordBindings": {
                                 "bump": "TEXCOORD_0",
-                                "diffuse": "TEXCOORD_0",
-                                "specular": "TEXCOORD_0"
+                                "diffuse": "TEXCOORD_0"
                             }
                         },
                         "type": "COLLADA-1.4.1/commonProfile"
@@ -421,6 +572,12 @@
                             "u_light0LinearAttenuation": "light0LinearAttenuation",
                             "u_light0QuadraticAttenuation": "light0QuadraticAttenuation",
                             "u_light0Transform": "light0Transform",
+                            "u_light1Color": "light1Color",
+                            "u_light1Transform": "light1Transform",
+                            "u_light2Color": "light2Color",
+                            "u_light2Transform": "light2Transform",
+                            "u_light3Color": "light3Color",
+                            "u_light3Transform": "light3Transform",
                             "u_modelViewMatrix": "modelViewMatrix",
                             "u_normalMatrix": "normalMatrix",
                             "u_projectionMatrix": "projectionMatrix",
@@ -431,35 +588,40 @@
                     "states": {
                         "enable": [
                             2884,
-                            2929
-                        ]
+                            2929,
+                            3042
+                        ],
+                        "functions": {
+                            "blendEquationSeparate": [
+                                32774,
+                                32774
+                            ],
+                            "blendFuncSeparate": [
+                                1,
+                                771,
+                                1,
+                                771
+                            ]
+                        }
                     }
                 }
             }
         }
     },
     "textures": {
-        "texture_Material_001_Diffuse_Color_001": {
+        "texture_MiddleBumps": {
             "format": 6408,
             "internalFormat": 6408,
             "sampler": "sampler_0",
-            "source": "Material_001_Diffuse_Color_001",
+            "source": "MiddleBumps",
             "target": 3553,
             "type": 5121
         },
-        "texture_Material_001_Normal": {
+        "texture_MiddleSpecular": {
             "format": 6408,
             "internalFormat": 6408,
             "sampler": "sampler_0",
-            "source": "Material_001_Normal",
-            "target": 3553,
-            "type": 5121
-        },
-        "texture_Material_001_Specular_Intensity": {
-            "format": 6408,
-            "internalFormat": 6408,
-            "sampler": "sampler_0",
-            "source": "Material_001_Specular_Intensity",
+            "source": "MiddleSpecular",
             "target": 3553,
             "type": 5121
         }

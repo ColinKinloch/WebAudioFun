@@ -1,8 +1,8 @@
 /*global define*/
 'use strict';
-//TODO Self timing?
-define(['Sequencer', 'Note'],
-function(Sequencer ,  Note){
+//TODO Timing?
+define(['./Sequencer'],
+function(Sequencer){
   var SimpleSeq = function(notes)
   {
     Sequencer.call(this);

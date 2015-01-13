@@ -8,7 +8,17 @@ function(){
     this.freq = Note.toFreq(key);
     this.mag = mag || key.mag/127 || 0.0;
     this.bend = 0.0;
+    this.length = Note.Crotchet;
   };
+  
+  Note.Maxima = 8;
+  Note.Longa = 4;
+  Note.Breve = 2;
+  Note.SemiBreve = 1;
+  Note.Minim = 1/2;
+  Note.Crotchet = 1/4;
+  Note.Quaver = 1/8;
+  Note.SemiQuaver = 1/16;
   
   Note.prototype.getFreq = function()
   {

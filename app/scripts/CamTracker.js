@@ -27,7 +27,7 @@ function(THREE){
     //this.camera.position.add(this.target.position.sub(this.camera.position ).multiplyScalar(0.5));
     //this.camera.translateZ(-10);
     this.camera.lookAt(this.target.position);
-  }
+  };
   
-  return CamTracker
+  return CamTracker;
 });

@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
 //General Midi sequencer
-define(['Sequencer'],
+define(['./Sequencer'],
 function(Sequencer){
   var GMSeq = function()
   {

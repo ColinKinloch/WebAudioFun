@@ -1,10 +1,10 @@
 /*global define*/
 'use strict';
-define(['Note'],
+define(['./Note'],
 function(Note){
-  var oldt = 0;
   var Sequencer = function(notes)
   {
+    this.oldt = 0;
     this.t = 0;
     this.speed = 1;
     this.notes = notes || {};
@@ -17,7 +17,7 @@ function(Note){
     this.t += dt;
     for(var n in this.notes)
     {
-      if(parseFloat(n)<oldt)
+      if(parseFloat(n)<this.oldt)
       {
         continue;
       }
@@ -42,7 +42,7 @@ function(Note){
             var comm = this.notes[n][i];
             if(comm === 'restart')
             {
-              this.t = oldt = 0;
+              this.t = this.oldt = 0;
             }
             else if(/u/.test(comm))
             {
@@ -52,7 +52,7 @@ function(Note){
         }
       }
     }
-    oldt = this.t;
+    this.oldt = this.t;
     return notes;
   };
   Sequencer.prototype.record = function(t, notes)
