@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['game/Game', 'THREE', 'CANNON', 'game/Pad', 'game/Button', 'CamTracker', 'music/Note', 'music/GoodSeq', 'music/ShepardSeq', 'music/MonoSynth', 'music/PolySynth', 'furEliseGood', 'glTF/threejs/glTFLoader'],
-function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  Note ,  GoodSeq ,  ShepardSeq ,  MonoSynth, PolySynth ,  furElise){
+define(['game/Game', 'THREE', 'CANNON', 'game/Pad', 'game/Button', 'CamTracker', 'music/Voice', 'music/Note', 'oldmusic/Note', 'oldmusic/GoodSeq', 'oldmusic/ShepardSeq', 'oldmusic/MonoSynth', 'oldmusic/PolySynth', 'furEliseGood', 'glTF/threejs/glTFLoader'],
+function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, NewNote,  Note ,  GoodSeq ,  ShepardSeq ,  MonoSynth, PolySynth ,  furElise){
   
   
   var ThisGame = function(canvas)
@@ -97,6 +97,9 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  Note ,  GoodS
      this.msynth.connect(this.audio.panner);
      this.seq = new GoodSeq(furElise);
      this.seq.speed = 0.4;
+     
+     
+    var aVoice = new NewVoice(context).start().connect(this.audio.panner).sing(new NewNote('c4', 1, 6.5));
     
     this.shepseq = new ShepardSeq(2, 4);
     var gap = 1/(2*this.shepn);
@@ -254,7 +257,7 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  Note ,  GoodS
     var notes = this.seq.update(d);
     for(let n in notes)
     {
-      this.msynth.noteOn(notes[n].getMidi(), notes[n].mag*10);
+      //this.msynth.noteOn(notes[n].getMidi(), notes[n].mag*10);
     }
     var snotes = [];
     for(let i=0; i<this.shepn; ++i)

@@ -1,8 +1,8 @@
 /*global define*/
 'use strict';
 //General Midi instrument
-define(['./Instrument', './Note'],
-function(Instrument ,  Note){
+define(['./Instrument'],
+function(Instrument){
   var GMInstrument = function(context)
   {
     Instrument.call(this, context);

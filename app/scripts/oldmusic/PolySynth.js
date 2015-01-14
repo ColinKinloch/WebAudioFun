@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['./Synth', './Voice', './Note'],
-function(Synth ,  Voice, Note ){
+define(['./Synth', './Voice'],
+function(Synth ,  Voice){
   var PolySynth = function(context)
   {
     Synth.call(this, context);

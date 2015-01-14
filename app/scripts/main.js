@@ -81,11 +81,11 @@ function(  $      ,  Stats ,  dat     ,  Game)
   var capture = function(e)
   {
     e.currentTarget.requestPointerLock();
-    e.currentTarget.addEventListener('mousemove', move)
+    e.currentTarget.addEventListener('mousemove', move);
   };
   canvas.on('dblclick', capture);
   
-  canvas.on('movement')
+  canvas.on('movement');
   
   var width, height;
   var resize = function(e)

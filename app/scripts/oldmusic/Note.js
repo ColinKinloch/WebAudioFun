@@ -3,20 +3,32 @@
 //Note definition and conversion
 define([],
 function(){
-  var Note = function(key, mag, length)
+  var Note = function(key, mag)
   {
     this.freq = Note.toFreq(key);
-    this.mag = mag || 0.0;
-    this.length = length || Infinity;
+    this.mag = mag || key.mag/127 || 0.0;
+    this.bend = 0.0;
+    this.length = Note.Eternal;
   };
   
-  Note.prototype.setFreq = function(val)
-  {
-    this.freq = Note.toFreq(val);
-  };
+  Note.Eternal = Infinity;
+  Note.Maxima = 8;
+  Note.Longa = 4;
+  Note.Breve = 2;
+  Note.SemiBreve = 1;
+  Note.Minim = 1/2;
+  Note.Crotchet = 1/4;
+  Note.Quaver = 1/8;
+  Note.SemiQuaver = 1/16;
+  
   Note.prototype.getFreq = function()
   {
-    return this.freq;
+    var freq = this.freq;
+    if(this.bend>0)
+    {
+      freq += 0;
+    }
+    return freq;
   };
   Note.prototype.getNote = function()
   {

@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['./Note'],
-function(Note){
+define([],
+function(){
   
   var Stave = function(name, signature)
   {

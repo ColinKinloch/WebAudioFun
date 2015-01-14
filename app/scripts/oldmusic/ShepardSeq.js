@@ -19,13 +19,12 @@ function(Sequencer, Note){
       this.seq[v] = new Sequencer();
       this.seq[v].t = v*7;
     }
-    console.log(notes)
     this.bpm = 120;
     Sequencer.call(this, notes);
   };
   
   
-  ShepardSeq.prototype.update = function(dt)
+  ShepardSeq.prototype.update = function()
   {
     
   };
