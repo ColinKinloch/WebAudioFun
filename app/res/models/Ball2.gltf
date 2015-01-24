@@ -1,7 +1,7 @@
 {
     "accessors": {
         "accessor_21": {
-            "bufferView": "bufferView_29",
+            "bufferView": "bufferView_56",
             "byteOffset": 0,
             "byteStride": 0,
             "componentType": 5123,
@@ -9,7 +9,7 @@
             "type": "SCALAR"
         },
         "accessor_23": {
-            "bufferView": "bufferView_30",
+            "bufferView": "bufferView_57",
             "byteOffset": 0,
             "byteStride": 12,
             "componentType": 5126,
@@ -27,7 +27,7 @@
             "type": "VEC3"
         },
         "accessor_25": {
-            "bufferView": "bufferView_30",
+            "bufferView": "bufferView_57",
             "byteOffset": 15552,
             "byteStride": 12,
             "componentType": 5126,
@@ -45,8 +45,68 @@
             "type": "VEC3"
         },
         "accessor_27": {
-            "bufferView": "bufferView_30",
+            "bufferView": "bufferView_57",
             "byteOffset": 31104,
+            "byteStride": 8,
+            "componentType": 5126,
+            "count": 1296,
+            "max": [
+                0.996379,
+                0.993839
+            ],
+            "min": [
+                0.0131702,
+                0.00720829
+            ],
+            "type": "VEC2"
+        },
+        "accessor_48": {
+            "bufferView": "bufferView_56",
+            "byteOffset": 2592,
+            "byteStride": 0,
+            "componentType": 5123,
+            "count": 1296,
+            "type": "SCALAR"
+        },
+        "accessor_50": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 41472,
+            "byteStride": 12,
+            "componentType": 5126,
+            "count": 1296,
+            "max": [
+                0.999719,
+                0.984532,
+                1
+            ],
+            "min": [
+                -0.99972,
+                -0.984531,
+                0.0423147
+            ],
+            "type": "VEC3"
+        },
+        "accessor_52": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 57024,
+            "byteStride": 12,
+            "componentType": 5126,
+            "count": 1296,
+            "max": [
+                0.981964,
+                0.96704,
+                1
+            ],
+            "min": [
+                -0.981964,
+                -0.96704,
+                -1
+            ],
+            "type": "VEC3"
+        },
+        "accessor_54": {
+            "bufferView": "bufferView_57",
+            "byteOffset": 72576,
             "byteStride": 8,
             "componentType": 5126,
             "count": 1296,
@@ -69,38 +129,24 @@
         "version": 0.8
     },
     "bufferViews": {
-        "bufferView_29": {
+        "bufferView_56": {
             "buffer": "Ball2",
-            "byteLength": 2592,
+            "byteLength": 5184,
             "byteOffset": 0,
             "target": 34963
         },
-        "bufferView_30": {
+        "bufferView_57": {
             "buffer": "Ball2",
-            "byteLength": 41472,
-            "byteOffset": 2592,
+            "byteLength": 82944,
+            "byteOffset": 5184,
             "target": 34962
         }
     },
     "buffers": {
         "Ball2": {
-            "byteLength": 44064,
+            "byteLength": 88128,
             "type": "arraybuffer",
             "uri": "Ball2.bin"
-        }
-    },
-    "images": {
-        "BaseDiffuse": {
-            "uri": "BaseDiffuse.png"
-        },
-        "MiddleBumps": {
-            "uri": "MiddleBumps.png"
-        },
-        "MiddleDetail": {
-            "uri": "MiddleDetail.png"
-        },
-        "MiddleSpecular": {
-            "uri": "MiddleSpecular.png"
         }
     },
     "lights": {
@@ -159,8 +205,12 @@
                         0,
                         1
                     ],
-                    "bump": "texture_MiddleBumps",
-                    "diffuse": "texture_MiddleSpecular",
+                    "diffuse": [
+                        0.64,
+                        0.64,
+                        0.64,
+                        1
+                    ],
                     "emission": [
                         0,
                         0,
@@ -190,6 +240,21 @@
                         "TEXCOORD_0": "accessor_27"
                     },
                     "indices": "accessor_21",
+                    "material": "Material_001-effect",
+                    "primitive": 4
+                }
+            ]
+        },
+        "Hemisphere_002-mesh": {
+            "name": "Hemisphere.002",
+            "primitives": [
+                {
+                    "attributes": {
+                        "NORMAL": "accessor_52",
+                        "POSITION": "accessor_50",
+                        "TEXCOORD_0": "accessor_54"
+                    },
+                    "indices": "accessor_48",
                     "material": "Material_001-effect",
                     "primitive": 4
                 }
@@ -241,7 +306,7 @@
                 1
             ],
             "meshes": [
-                "Hemisphere-mesh"
+                "Hemisphere_002-mesh"
             ],
             "name": "HemisphereLeft"
         },
@@ -373,19 +438,10 @@
         "program_0": {
             "attributes": [
                 "a_normal",
-                "a_position",
-                "a_texcoord0"
+                "a_position"
             ],
             "fragmentShader": "Ball20FS",
             "vertexShader": "Ball20VS"
-        }
-    },
-    "samplers": {
-        "sampler_0": {
-            "magFilter": 9729,
-            "minFilter": 9729,
-            "wrapS": 10497,
-            "wrapT": 10497
         }
     },
     "scene": "defaultScene",
@@ -413,11 +469,8 @@
                 "ambient": {
                     "type": 35666
                 },
-                "bump": {
-                    "type": 35678
-                },
                 "diffuse": {
-                    "type": 35678
+                    "type": 35666
                 },
                 "emission": {
                     "type": 35666
@@ -511,10 +564,6 @@
                 },
                 "specular": {
                     "type": 35666
-                },
-                "texcoord0": {
-                    "semantic": "TEXCOORD_0",
-                    "type": 35664
                 }
             },
             "pass": "defaultPass",
@@ -523,12 +572,11 @@
                     "details": {
                         "commonProfile": {
                             "extras": {
-                                "doubleSided": false
+                                "doubleSided": true
                             },
                             "lightingModel": "Phong",
                             "parameters": [
                                 "ambient",
-                                "bump",
                                 "diffuse",
                                 "emission",
                                 "light0Color",
@@ -547,24 +595,18 @@
                                 "projectionMatrix",
                                 "shininess",
                                 "specular"
-                            ],
-                            "texcoordBindings": {
-                                "bump": "TEXCOORD_0",
-                                "diffuse": "TEXCOORD_0"
-                            }
+                            ]
                         },
                         "type": "COLLADA-1.4.1/commonProfile"
                     },
                     "instanceProgram": {
                         "attributes": {
                             "a_normal": "normal",
-                            "a_position": "position",
-                            "a_texcoord0": "texcoord0"
+                            "a_position": "position"
                         },
                         "program": "program_0",
                         "uniforms": {
                             "u_ambient": "ambient",
-                            "u_bump": "bump",
                             "u_diffuse": "diffuse",
                             "u_emission": "emission",
                             "u_light0Color": "light0Color",
@@ -587,43 +629,11 @@
                     },
                     "states": {
                         "enable": [
-                            2884,
-                            2929,
-                            3042
-                        ],
-                        "functions": {
-                            "blendEquationSeparate": [
-                                32774,
-                                32774
-                            ],
-                            "blendFuncSeparate": [
-                                1,
-                                771,
-                                1,
-                                771
-                            ]
-                        }
+                            2929
+                        ]
                     }
                 }
             }
-        }
-    },
-    "textures": {
-        "texture_MiddleBumps": {
-            "format": 6408,
-            "internalFormat": 6408,
-            "sampler": "sampler_0",
-            "source": "MiddleBumps",
-            "target": 3553,
-            "type": 5121
-        },
-        "texture_MiddleSpecular": {
-            "format": 6408,
-            "internalFormat": 6408,
-            "sampler": "sampler_0",
-            "source": "MiddleSpecular",
-            "target": 3553,
-            "type": 5121
         }
     }
 }

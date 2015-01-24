@@ -4,50 +4,37 @@ define([],
 function(){
   var Button = function(button)
   {
-    this.current = 2;
-    this.last = 2;
+    this.state = [];
+    this.length = 2;
     this.button = button || null;
   };
   
   Button.prototype.poll = function()
   {
-    if(this.button)
-    {
-      var p = parseInt(Number(this.button.pressed));
-      if(this.pressed()!==Boolean(p%2))
-      {
-        this.current = p;
-      }
-    }
-  };
-  Button.prototype.update = function()
+    this.set(this.button.pressed);
+  }
+  
+  Button.prototype.set = function(state)
   {
-    if((this.last === 0)&&(this.current === 0))
+    this.state.push(state);
+    if(this.state.length > this.length)
     {
-      this.current = 2;
+      this.state.shift();
     }
-    else if((this.last === 1)&&(this.current === 1))
-    {
-      this.current = 3;
-    }
-    this.last = this.current;
   };
+  
   Button.prototype.pressed = function()
   {
-    return Boolean(this.current%2);
+    return this.state[this.state.length-1];
   };
   Button.prototype.justPressed = function()
   {
-    return Boolean(this.current === 1);
+    return (this.state[this.state.length-1] && !this.state[this.state.length-2]);
   };
   Button.prototype.justReleased = function()
   {
-    return Boolean(this.current === 0);
+    return (!this.state[this.state.length-1] && this.state[this.state.length-2]);
   };
-  Button.prototype.set = function(status)
-  {
-    this.current = parseInt(Number(status));
-  };
+  
   return Button;
 });
-

@@ -7,12 +7,11 @@
     "jquery": "~1.11.0",
     "requirejs": "~2.1.15",
     "gl-matrix": "~2.2.1",
-    "threejs": "r69",
     "stats.js": "*",
     "dat-gui": "~0.5.0",
     "cannon.js": "~0.6.1",
     "requirejs-text": "~2.0.13",
-    "glTF": "https://github.com/KhronosGroup/glTF.git"
+    "glTF": "https://github.com/KhronosGroup/glTF.git",
   },
   "devDependencies": {}
 }

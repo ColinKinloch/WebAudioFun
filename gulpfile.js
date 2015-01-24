@@ -18,6 +18,12 @@ gulp.task('styles', function () {
     .pipe($.size());
 });
 
+gulp.task('harmony', ['scripts'], function() {
+  return gulp.src('app/scripts/**/*.js')
+    .pipe($.traceur())
+    .pipe(gulp.dest('.tmp/scripts'));
+});
+
 gulp.task('coffeelint', function() {
   return gulp.src('app/scripts/**/*.coffee')
     .pipe($.coffeelint())
@@ -39,7 +45,7 @@ gulp.task('scripts', ['coffee'], function () {
     .pipe($.size());
 });
 
-gulp.task('html', ['styles', 'scripts'], function () {
+gulp.task('html', ['styles'], function () {
   var jsFilter = $.filter('**/*.js');
   var cssFilter = $.filter('**/*.css');
 

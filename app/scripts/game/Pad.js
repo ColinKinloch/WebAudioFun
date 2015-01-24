@@ -1,6 +1,6 @@
 /*global define*/
 'use strict';
-define(['./Button', './Axis'],
+define(['./Button', './BtrAxis'],
 function(Button, Axis){
   const ButtonMap = [
     'b',
@@ -32,22 +32,8 @@ function(Button, Axis){
     {
       this[ButtonMap[b]] = new Button(gamepad.buttons[b]);
     }
-    for(var a in gamepad.axes)
-    {
-      this[AxisMap[a]] = new Axis(gamepad.axes, a);
-    }
-  };
-  
-  Pad.prototype.update = function()
-  {
-    for(let p in this)
-    {
-      if(this[p] instanceof Button)
-      {
-        this[p].update();
-      }
-    }
-    
+    this[AxisMap[0]] = new Axis(gamepad, 'axes', 0, 1);
+    this[AxisMap[1]] = new Axis(gamepad, 'axes', 2, 3);
   };
   Pad.prototype.poll = function()
   {

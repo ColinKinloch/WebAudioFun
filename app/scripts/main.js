@@ -1,50 +1,7 @@
-/*global require*/
+/*global define*/
 /*jslint bitwise: true */
 'use strict';
-require.config({
-  baseUrl: 'scripts',
-  paths: {
-    'jquery': '../bower_components/jquery/dist/jquery',
-    'bootstrap': '../bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap',
-    'text': '../bower_components/requirejs-text/text',
-    'stats': '../bower_components/stats.js/build/stats.min',
-    'THREE': '../bower_components/threejs/build/three',
-    'dat-GUI': '../bower_components/dat-gui/build/dat.gui',
-    'glTF': '../bower_components/glTF/loaders/',
-    'CANNON': '../bower_components/cannon.js/build/cannon'
-  },
-  shim: {
-    bootstrap: ['jquery'],
-    stats: {
-      exports: 'Stats'
-    },
-    THREE: {
-      exports: 'THREE'
-    },
-    CANNON: {
-      exports: 'CANNON'
-    },
-    'dat-GUI': {
-      exports: 'dat'
-    },
-    'glTF/threejs/glTFLoaderUtils': {
-      exports: 'THREE'
-    },
-    'glTF/threejs/glTFAnimation': {
-      exports: 'THREE'
-    },
-    'glTF/threejs/glTFLoader': {
-      exports: 'THREE',
-      deps: [
-        'THREE',
-        'glTF/glTF-parser',
-        'glTF/threejs/glTFLoaderUtils',
-        'glTF/threejs/glTFAnimation'
-      ]
-    }
-  }
-});
-require([ 'jquery', 'stats', 'dat-GUI', 'ThisGame'],
+define([ 'jquery', 'stats', 'dat-GUI', 'ThisGame'],
 function(  $      ,  Stats ,  dat     ,  Game)
 {
   var canvas = $('#main');
@@ -73,19 +30,42 @@ function(  $      ,  Stats ,  dat     ,  Game)
   scenef.add(g.listener.context.listener, 'dopplerFactor').min(0.0).max(2).name('Doppler Effect');
   scenef.add(g.listener.context.listener, 'speedOfSound').min(0.0).max(686).name('Speed of Sound');
   
-  var move = function(e)
-  {
-    console.log(e.movementX, e.movementY);
-  };
-  
   var capture = function(e)
   {
     e.currentTarget.requestPointerLock();
-    e.currentTarget.addEventListener('mousemove', move);
+  };
+  var mouseMove = function(e)
+  {
+    g.mouse(e.movementX, e.movementY)
+  };
+  var lockChange = function(e)
+  {
+    if(document.pointerLockElement === canvas[0])
+    {
+      e.currentTarget.addEventListener('mousemove', mouseMove);
+    }
+    else
+    {
+      e.currentTarget.removeEventListener('mousemove', mouseMove);
+    }
   };
   canvas.on('dblclick', capture);
+  $(document).on('pointerlockchange', lockChange);
   
   canvas.on('movement');
+  
+  var visible = function(e)
+  {
+    if(document.hidden)
+    {
+      //g.listener.context.suspend();
+    }
+    else
+    {
+      //g.listener.context.resume();
+    }
+  };
+  $(document).on('visibilitychange', visible);
   
   var width, height;
   var resize = function(e)

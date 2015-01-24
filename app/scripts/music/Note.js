@@ -8,11 +8,29 @@ function(){
     this.freq = Note.toFreq(key);
     this.mag = mag || 0.0;
     this.length = length || Infinity;
+    console.log('there', this.length)
   };
   
-  Note.prototype.setFreq = function(val)
+  Note.noteExp = /^[a-gA-G](es|#|is)*\-?\d*$/;
+  Note.keyExp = /^[a-gA-G]/;
+  Note.octaveExp = /\-?\d+$/;
+  Note.sharpExp = /is|#|♯|/g;
+  Note.dSharpExp = /𝄪/g;
+  Note.flatExp = /es|♭/g;
+  Note.dFlatExp = /𝄫/g;
+  
+  Note.prototype.set = function(val)
   {
     this.freq = Note.toFreq(val);
+    return this;
+  };
+  Note.prototype.copy = function(note)
+  {
+    console.log('here', note.length)
+    this.freq = note.freq;
+    this.mag = note.mag;
+    this.length = note.length;
+    return this;
   };
   Note.prototype.getFreq = function()
   {
@@ -42,17 +60,19 @@ function(){
   };
   Note.noteToMidi = function(note)
   {
-    if(! /^[a-gA-G](es|#|is)*\-?\d*$/.test(note))
+    if(! Note.noteExp.test(note))
     {
       throw 'Malformed note';
     }
-    var key = /^[a-gA-G]/.exec(note)[0].toLowerCase();
-    var octave =/\-?\d+$/.exec(note) || [3];
+    var key = Note.keyExp.exec(note)[0].toLowerCase();
+    var octave = Note.octaveExp.exec(note) || [3];
     octave = Number(octave[0]);
     octave += 2;
-    var sharp = note.match(/is|#/g) || [];
-    var flat = note.match(/es/g) || [];
-    var intonation = sharp.length-flat.length;
+    var sharp = note.match(Note.sharpExp) || [];
+    var dSharp = note.match(Note.dSharpExp) || [];
+    var flat = note.match(Note.flatExp) || [];
+    var dFlat = note.match(Note.dFlatExp) || [];
+    var intonation = (sharp.length+dSharp.length*2)-(flat.length+dFlat.length*2);
     key = ('c d ef g a b'.search(key))+intonation;
     return 12*octave+key;
   };
@@ -88,7 +108,7 @@ function(){
         return Note.noteToFreq(val);
       case 'number'://Freq
         return val;
-      case 'undefined':
+      case 'undefined'://A4, 440Hz
         return 440;
       case 'object'://MIDI
         return Note.midiToFreq(val.key);

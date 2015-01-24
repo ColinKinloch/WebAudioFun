@@ -1,7 +1,7 @@
 /*global define*/
 'use strict';
-define(['THREE', 'CANNON'],
-function(THREE ,  CANNON){
+define(['THREE', 'THREEex/renderers/WebGLDeferredRenderer', 'CANNON'],
+function(THREE ,  THREEDefRend, CANNON){
   var Game = function(canvas)
   {
     this.height = canvas.innerHeight;
@@ -10,7 +10,10 @@ function(THREE ,  CANNON){
     
     //Renderer
     this.scene = new THREE.Scene();
-    this.renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
+    let renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: false});
+    renderer.setClearColor(0x000000, 0);
+    renderer.autoClear = false;
+    this.renderer = new THREEDefRend.WebGLDeferredRenderer({renderer:renderer, antialias:true});
     
     this.camera = new THREE.PerspectiveCamera(75, this.width/this.height, 0.1, 1000);
     this.camera.up.set(0,0,1);

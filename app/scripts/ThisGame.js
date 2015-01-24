@@ -1,8 +1,9 @@
 /*global define*/
 'use strict';
-define(['game/Game', 'THREE', 'CANNON', 'game/Pad', 'game/Button', 'CamTracker', 'music/Voice', 'music/Note', 'oldmusic/Note', 'oldmusic/GoodSeq', 'oldmusic/ShepardSeq', 'oldmusic/MonoSynth', 'oldmusic/PolySynth', 'furEliseGood', 'glTF/threejs/glTFLoader'],
-function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, NewNote,  Note ,  GoodSeq ,  ShepardSeq ,  MonoSynth, PolySynth ,  furElise){
+define(['game/Game', 'THREE', 'CANNON', 'THREEex/Cloth', 'game/Pad', 'game/Pointer',  'game/LevelLoader', 'CamTracker', 'game/MiniMap', 'music/Voice', 'music/Note', 'oldmusic/Note', 'oldmusic/GoodSeq', 'oldmusic/ShepardSeq', 'oldmusic/MonoSynth', 'oldmusic/PolySynth', 'furEliseGood'],
+function(Game      ,  THREE ,  CANNON , THREEex,       Pad ,       Pointer, LevelLoader       ,  CamTracker ,  MiniMap,  NewVoice    , NewNote     ,  Note          ,  GoodSeq          ,  ShepardSeq          ,  MonoSynth          , PolySynth           ,  furElise){
   
+  console.log('ex', THREEex)
   
   var ThisGame = function(canvas)
   {
@@ -11,14 +12,18 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, New
     
     this.pads = navigator.getGamepads();
     
-    this.loader = new THREE.glTFLoader();
-    this.loader.useBufferGeometry = false;
+    this.gp;
+    this.pointer = new Pointer();
+    
+    this.levelLoader = new LevelLoader();
     
     this.shepn = 4;
     this.shep = [];
     this.shepsynth = [];
     
     Game.prototype.constructor.call(this, canvas);
+    
+    //this.minimap = new MiniMap(this.scene, this.renderer, 10, 10, 100, 100);
     
     var context = this.listener.context;
     
@@ -37,12 +42,12 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, New
     this.sphereObj = new THREE.Object3D();
     this.scene.add(this.sphereObj);
     var ball;
-    this.loader.load('/res/models/Ball2.gltf', function(data){
-      ball = data.scene;
+    this.levelLoader.load(this, '/res/models/Sphere.gltf', function(data){
+      ball = data.scene.children[0];
       //ball.scale.set(scale, scale, scale);
       //monster.rotation.x = -0.5*Math.PI;
       //that.scene.add(ball);
-      console.log(ball);
+      //console.log(data.scene.children[0]);
       for(var i=0; i< data.animations.length; i++)
       {
         var anim = data.animations[i];
@@ -98,8 +103,20 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, New
      this.seq = new GoodSeq(furElise);
      this.seq.speed = 0.4;
      
-     
-    var aVoice = new NewVoice(context).start().connect(this.audio.panner).sing(new NewNote('c4', 1, 6.5));
+    /*var aNote = new NewNote('c4', 1, 6.5);
+    var aVoice = new NewVoice(context).start().connect(this.audio.panner).sing(aNote);
+    aNote.set('c5');
+    aNote.set('c2');
+    aNote.set('c5');
+    aNote.set('c7');
+    aNote.length = 1;
+    aNote.length = 2;
+    aNote.length = 3;
+    aNote.length = 1;
+    aNote.mag = 0.1;
+    aNote.mag = 0.34;
+    var bNote = new Note('a2', 2, 5);
+    aNote.copy(bNote);*/
     
     this.shepseq = new ShepardSeq(2, 4);
     var gap = 1/(2*this.shepn);
@@ -197,24 +214,22 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, New
     Game.prototype.loop.call(this, t, d);
     
     var pad = this.pads[0];
-    var gp;
     if(pad !== undefined)
     {
-      if(!gp)
+      if(!this.gp)
       {
-        gp = new Pad(pad);
+        this.gp = new Pad(pad);
       }
-      var a1 = gp.ls;
-      var a2 = gp.rs;
+      var a1 = this.gp.ls.get();
+      var a2 = this.gp.rs.get();
       
-      gp.update();
-      gp.poll();
+      this.gp.poll();
       
       var camSp = new THREE.Vector2(0.1,0.1);
       //var rotScale = new THREE.Vector2(-0.01, -0.01);
       var run = 1;
       
-      if(gp.b.pressed())
+      if(this.gp.b.pressed())
       {
         run = 10;
       }
@@ -225,33 +240,45 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, New
       var angleV = new THREE.Vector2().copy(this.sphereObj.position);
       angleV.sub(new THREE.Vector2().copy(this.camera.position));
       var angle = THREE.Vector3.prototype.angleTo.call(angleV,new THREE.Vector2(1,0,0));
+      angle -= Math.PI/2;
       if(angleV.y<0)
       {
         angle = -angle+2*Math.PI;
       }
+      angle += Math.PI/2;
       var move = new THREE.Vector3().copy(a1).setZ(0).applyAxisAngle(new THREE.Vector3(0,0,1), angle);
-      var force = new CANNON.Vec3(run*move.y, run*move.x, 0);
+      if(a1.x!==0 || a1.y!==0)
+      {
+        console.log(angle*(180/Math.PI))
+        console.log('m', move.x, move.y);
+        console.log('a', a1.x, a1.y);
+      }
+      var force = new CANNON.Vec3(move.y, move.x, 0);
       this.sphereBody.applyImpulse(force, this.sphereBody.position);
-      this.sphereBody.angularVelocity.x += a1.x;
-      this.sphereBody.angularVelocity.y += a1.y;
+      //this.sphereBody.angularVelocity.x += move.x*0.1;
+      //this.sphereBody.angularVelocity.y += move.y*0.1;
       
       
-      if(gp.y.justPressed())
+      if(this.gp.y.justPressed())
       {
         this.sphereBody.velocity.set(0,0,10);
       }
       
-      if(gp.x.pressed())
+      if(this.gp.x.pressed())
       {
          this.audio.gain.gain.value = !!this.audio.gain.gain.value;
       }
       
-      if(gp.start.pressed())
+      if(this.gp.start.pressed())
       {
         this.sphereBody.position.set(0,0,2);
         this.sphereBody.velocity.set(0,0,0);
         this.sphereBody.angularVelocity.set(0,0,0);
         this.sphereBody.quaternion.set(0,0,0,1);
+      }
+      if(this.gp.select.pressed())
+      {
+        this.camera.position.set(5,0,1);
       }
     }
     var notes = this.seq.update(d);
@@ -274,11 +301,18 @@ function(Game ,  THREE ,  CANNON ,  Pad ,  Button ,  CamTracker ,  NewVoice, New
     this.sphereObj.position.copy(this.sphereBody.position);
     this.sphereObj.quaternion.copy(this.sphereBody.quaternion);
     
-    THREE.glTFAnimator.update();
+    this.levelLoader.animator.update();
     
-     this.camtrack.update();
+    this.camtrack.update();
+    
     
     Game.prototype.draw.call(this);
+    //this.minimap.draw();
+  };
+  
+  ThisGame.prototype.mouse = function(x, y)
+  {
+    this.pointer.set(x,y);
   };
   
   return ThisGame;
